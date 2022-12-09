@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "tranquoctuan0126",
+    "database": "HumanResourcesManagement",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "tranquoctuan0126",
+    "database": "HumanResourcesManagement",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "tranquoctuan0126",
+    "database": "HumanResourcesManagement",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}

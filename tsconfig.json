@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": true,
+    "removeComments": true,
+    "strictNullChecks": false,
+    "outDir": "dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES6",
+    "baseUrl": ".",
+    "rootDirs": ["src", "dist"],
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true
+  },
+  "compileOnSave": true,
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
