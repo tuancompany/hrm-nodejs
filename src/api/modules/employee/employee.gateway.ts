@@ -19,6 +19,11 @@ import { v4 as uuidv4 } from "uuid";
 import { API_ERROR } from "./../../../../shared/constants";
 import { isEmpty } from "lodash";
 
+/**
+ * middleware to check whether user has access to a specific endpoint
+ *
+ * @interface Entity to format and make sure that data is the entity passing to DB.
+ */
 export class EmployeeGateway {
   constructor() {}
 

@@ -7,7 +7,6 @@ import { UserRoute } from "./api/routes/user.route";
 
 
 import { AuthenticationMiddleware } from "./api/middlewares/auth.middleware";
-import { JwtAuthentication } from './../shared/helpers/utils/jwt.utils';
 import { Sequelize, sequelize } from "./db/";
 import { ALL_VALID_ACCESS_TYPES, API_PREFIX } from "./../shared/constants";
 
@@ -18,7 +17,6 @@ export class Server {
   private readonly employeeRoute: EmployeeRoute;
   private readonly userRoute: UserRoute
   private readonly authenticationMiddleware: AuthenticationMiddleware;
-  private readonly jwtAuthentication: JwtAuthentication;
   private readonly sequelize: Sequelize;
   constructor() {
     this.app = express();
@@ -27,7 +25,6 @@ export class Server {
     this.employeeRoute = new EmployeeRoute();
     this.userRoute = new UserRoute();
     this.authenticationMiddleware = new AuthenticationMiddleware();
-    this.jwtAuthentication = new JwtAuthentication();
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -40,7 +37,6 @@ export class Server {
   }
 
   public start(): http.Server {
-    console.log('jwt', this.jwtAuthentication.generateToken());
     return this.app.listen(this.port, () => {
       console.log(`Server is listening on port ${this.port}`);
     });
