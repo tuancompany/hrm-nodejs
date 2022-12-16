@@ -3,6 +3,7 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
+  ConflictError
 } from "./errors";
 
 export enum HTTP_STATUS {
@@ -68,6 +69,9 @@ export const API_ERROR = {
   },
   NOT_FOUND(message: string) { 
     return new NotFoundError(message ? `Not found error: ${message}` : "Not found error");
+  },
+  CONFLICT(message: string) {
+    return new ConflictError(message ? `Conflict resource error: ${message}` : "Conflict resource error");
   }
 };
 
@@ -81,3 +85,17 @@ export const API_PREFIX = {
   EMPLOYEE_PREFIX: "/employee",
   USER_PREFIX: "/user"
 };
+// "Full", "Admin", "Read only", "Edit", "Create"
+export const USER_PERMISSION = {
+  FULL: "Full",
+  ADMIN: "Admin",
+  READ_ONLY: "Read only",
+  EDIT: "Edit",
+  CREATE: "Create"
+}
+
+export const USER_ROLE = {
+  ADMIN: "Admin",
+  MEMBER: "Member",
+  VIEWER: "Viewer"
+}

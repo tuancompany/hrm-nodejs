@@ -11,6 +11,19 @@ export class UserRoute {
 
     this.router.use(API_PREFIX.USER_PREFIX, this.router); // prefix for api user.
 
+    this.router.post('/sign-up', async (req: Request, res: Response) => {
+      try {
+        const user = await this.userController.createUser(req);
+        res.json({
+          data: user
+        });
+      } catch (error) {
+        res.json({
+          error
+        })
+      }
+    });
+
     this.router.post("/login", async (req: Request, res: Response) => {
       try {
         const token = await this.userController.login(req);

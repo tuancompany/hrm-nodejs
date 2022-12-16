@@ -31,6 +31,16 @@ import {
   TimeKeepingTypeDefinition,
 } from "./models/timekeeping-type.model";
 import { TimeKeeping, TimeKeepingDefinition } from "./models/timekeeping.model";
+import { User, UserDefinition } from "./models/user.model";
+import {
+  UserPermission,
+  UserPermissionDefinition,
+} from "./models/user-permission.model";
+import { Permission, PermissionDefinition } from "./models/permission.model";
+import {
+  PermissionDetails,
+  PermissionDetailsDefinition,
+} from "./models/permission-details.model";
 
 const env = process.env.NODE_ENV || "development";
 
@@ -125,6 +135,27 @@ const modelsInit = [
     definition: TimeKeepingDefinition,
     tableName: "TimeKeeping",
   },
+  {
+    model: User,
+    definition: UserDefinition,
+    tableName: "User"
+  },
+  {
+    model: UserPermission,
+    definition: UserPermissionDefinition,
+    tableName: "UserPermission"
+  },
+  {
+    model: Permission,
+    definition: PermissionDefinition,
+    tableName: "Permission"
+  },
+  {
+    model: PermissionDetails,
+    definition: PermissionDetailsDefinition,
+    tableName: "PermissionDetails"
+  },
+
 ];
 
 modelsInit.forEach((modelInit) => {
@@ -146,6 +177,9 @@ const modelsAssociate = [
   Position,
   TimeKeepingType,
   TimeKeeping,
+  User,
+  Permission,
+  PermissionDetails
 ];
 
 modelsAssociate.forEach((model) => {
