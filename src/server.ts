@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 
 import { EmployeeRoute } from "./api/routes/employee.route";
 import { UserRoute } from "./api/routes/user.route";
+import { AuthRoute } from "./api/routes/auth.route";
 
 import { AuthenticationMiddleware } from "./api/middlewares/auth.middleware";
 import { Sequelize, sequelize } from "./db/";
@@ -15,7 +16,8 @@ export class Server {
   private readonly app: express.Express;
   private readonly port: string;
   private readonly employeeRoute: EmployeeRoute;
-  private readonly userRoute: UserRoute
+  private readonly userRoute: UserRoute;
+  private readonly authRoute: AuthRoute;
   private readonly authenticationMiddleware: AuthenticationMiddleware;
   private readonly sequelize: Sequelize;
   constructor() {
@@ -24,10 +26,14 @@ export class Server {
     this.sequelize == sequelize;
     this.employeeRoute = new EmployeeRoute();
     this.userRoute = new UserRoute();
+    this.authRoute = new AuthRoute();
     this.authenticationMiddleware = new AuthenticationMiddleware();
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
 
+    //***** */ Auth route: Auth route don't need to attach jwt token into its headers
+    // ***** So that we put it above from authentication middleware
+    this.app.use(API_PREFIX.ROOT_PREFIX, this.authRoute.routes());
     // Middlewares.
     this.app.use(this.authenticationMiddleware.authorize(ALL_VALID_ACCESS_TYPES));
 

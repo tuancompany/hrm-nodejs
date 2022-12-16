@@ -1,5 +1,8 @@
 import { sign, SignOptions, verify, VerifyOptions } from "jsonwebtoken";
 import * as fs from "fs";
+import {
+  TOKEN_CONFIG,
+} from "../../../shared/constants";
 
 // https://www.ssh.com/academy/ssh/passphrase
 export interface TokenPayload {
@@ -12,23 +15,33 @@ export interface TokenPayload {
 export class JwtAuthentication {
   constructor() {}
 
-  public generateToken({name, userId}: {name: string, userId: string}) {
+  public generateToken({
+    name,
+    userId,
+    accessTypes,
+    expireTime
+  }: {
+    name: string;
+    userId: string;
+    accessTypes: string[];
+    expireTime: string;
+  }) {
     try {
       // Information to be encoded in the JWT
       const payload = {
         name,
         userId,
-        accessTypes: [],
+        accessTypes,
       };
 
       // Read private key value
       const privateKey = {
         key: fs.readFileSync("private.pem"),
-        passphrase: "tuan12345",
+        passphrase: TOKEN_CONFIG.PASS_PHRASE,
       };
       const signOptions: SignOptions = {
         algorithm: "RS256",
-        expiresIn: "1h",
+        expiresIn: expireTime,
       };
 
       // Generate JWT
@@ -39,7 +52,7 @@ export class JwtAuthentication {
   }
   // string | Jwt | JwtPayload | undefined |
   public validateToken(token: string): Promise<TokenPayload> {
-    const publicKey = fs.readFileSync("public.key");
+    const publicKey = fs.readFileSync("public.pem");
     const verifyOptions: VerifyOptions = {
       algorithms: ["RS256"],
     };
