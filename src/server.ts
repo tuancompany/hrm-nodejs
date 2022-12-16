@@ -2,9 +2,9 @@ import * as bodyParser from "body-parser";
 import express from "express";
 import * as http from "http";
 import * as dotenv from "dotenv";
+
 import { EmployeeRoute } from "./api/routes/employee.route";
 import { UserRoute } from "./api/routes/user.route";
-
 
 import { AuthenticationMiddleware } from "./api/middlewares/auth.middleware";
 import { Sequelize, sequelize } from "./db/";
@@ -42,14 +42,3 @@ export class Server {
     });
   }
 }
-// https://www.pgadmin.org/docs/pgadmin4/6.8/erd_tool.html
-// youtube.com/watch?v=o23LBJ-9jsU
-// https://www.youtube.com/watch?v=pRE2yns9bd0 // QLNS
-// https://khalilstemmler.com/articles/sequelize-tags-junction-pattern/
-
-// https://viblo.asia/p/sequelize-typescript-purrrrfect-naQZRQ8qKvx
-// https://sequelize.org/docs/v6/other-topics/query-interface/
-
-//https://sebhastian.com/sequelize-belongstomany/
-
-//https://viblo.asia/p/bai-toan-phan-quyen-van-de-muon-thuo-1VgZvw9mlAw
