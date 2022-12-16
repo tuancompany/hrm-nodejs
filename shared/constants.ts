@@ -76,12 +76,14 @@ export const API_ERROR = {
 };
 
 export const ALL_VALID_ACCESS_TYPES = [
-  'get-employees',
-  'create-employees',
+  "HRM-login",
+  'HRM-get-employees',
+  'HRM-create-employees',
 ]
 
 export const API_PREFIX = {
   ROOT_PREFIX: '/api',
+  AUTH_PREFIX: '/auth',
   EMPLOYEE_PREFIX: "/employee",
   USER_PREFIX: "/user"
 };
@@ -98,4 +100,11 @@ export const USER_ROLE = {
   ADMIN: "Admin",
   MEMBER: "Member",
   VIEWER: "Viewer"
+}
+
+export const TOKEN_CONFIG = {
+  PASS_PHRASE: "tuan12345",
+  EXPIRE_TIME: "1h",
+  REFRESH_EXPIRE_TIME: "12",
+  REFRESH_TOKEN_KEY: "HRM_refresh"
 }

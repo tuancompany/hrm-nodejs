@@ -4,14 +4,18 @@ import { UserPermission } from "./../../../db/models/user-permission.model";
 import { v4 as uuidv4 } from "uuid";
 import { UserDto } from "shared/dtos/user.dto";
 import { UserEntity } from "./../../../../shared/entity/user.entity";
-import { CreateUserResponse, ICreateUserResponse } from "./../../../../shared/interfaces/create-user.response";
+import {
+  CreateUserResponse,
+  ICreateUserResponse,
+} from "./../../../../shared/interfaces/create-user.response";
+import { IGetUserResponse } from "./../../../../shared/interfaces/get-user.response";
 import { PermissionDto } from "./../../../../shared/dtos/permission.dto";
 import { UserPermissionEntity } from "./../../../../shared/entity/user-permission.entity";
 
 export class UserGateway {
   constructor() {}
 
-  public async getUserByEmail(email: string): Promise<CreateUserResponse | {}> {
+  public async getUserByEmail(email: string): Promise<IGetUserResponse> {
     try {
       const user = await User.findOne({
         where: {
@@ -20,10 +24,11 @@ export class UserGateway {
       });
 
       if (!user) {
-        return {};
+        return;
       }
+      const response = user.get({ plain: true });
 
-      return user;
+      return response;
     } catch (error) {
       throw error;
     }
@@ -41,7 +46,6 @@ export class UserGateway {
       const userEntity = new UserEntity(user);
       const userCreated = await User.create(userEntity);
 
-
       const userPermissionEntity = permissions.map(
         (permission) =>
           new UserPermissionEntity({
@@ -53,7 +57,9 @@ export class UserGateway {
       );
 
       await UserPermission.bulkCreate(userPermissionEntity);
-      const response: ICreateUserResponse = new CreateUserResponse(userCreated.get({plain: true}));
+      const response: ICreateUserResponse = new CreateUserResponse(
+        userCreated.get({ plain: true })
+      );
 
       return response;
     } catch (error) {
