@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { ICreateUserResponse } from "./../../../../shared/interfaces/create-user.response";
-import { UserService } from './user.service';
+import { UserService } from "./user.service";
 
 export class UserController {
   private readonly userService: UserService;
@@ -8,9 +8,20 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async createUser(req: Request): Promise<ICreateUserResponse> {
-    const user = this.userService.createUser(req.body);
-    return user;
-  }
+  public async getAllUsers(req: Request): Promise<ICreateUserResponse> {
+    try {
+      const { limit, order, permission, role, name } = req.query;
 
+      const user = await this.userService.getAllUsers({
+        limit,
+        order,
+        permission: Boolean(permission),
+        role,
+        name
+      });
+      return user;
+    } catch (e) {
+      throw e;
+    }
+  }
 }

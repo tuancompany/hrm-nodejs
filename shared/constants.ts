@@ -108,3 +108,8 @@ export const TOKEN_CONFIG = {
   REFRESH_EXPIRE_TIME: "12",
   REFRESH_TOKEN_KEY: "HRM_refresh"
 }
+
+export const SORT = {
+  ASC: 'ASC',
+  DESC: 'DESC'
+}
