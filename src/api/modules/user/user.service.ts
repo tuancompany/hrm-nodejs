@@ -1,3 +1,4 @@
+import { IGetUserResponse } from "../../../../shared/interfaces/get-user.response";
 import { API_ERROR, SORT, USER_ROLE } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
 
@@ -13,7 +14,7 @@ export class UserService {
     permission,
     role,
     name,
-  }): Promise<any> {
+  }): Promise<IGetUserResponse[]> {
     try {
       const orderFormat = order.split(",");
 
@@ -70,8 +71,11 @@ export class UserService {
 
       const user = await this.userGateway.getAllUsers(options);
       return user;
-    } catch (error) {
-      throw API_ERROR.INTERNAL_SERVER(`${error}`);
+    } catch (error: any) {
+      if(error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      }
+      throw error;
     }
   }
 

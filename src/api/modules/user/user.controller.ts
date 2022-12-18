@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { ICreateUserResponse } from "./../../../../shared/interfaces/create-user.response";
 import { UserService } from "./user.service";
+import { IGetUserResponse } from "../../../../shared/interfaces/get-user.response";
 
 export class UserController {
   private readonly userService: UserService;
@@ -8,7 +8,7 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async getAllUsers(req: Request): Promise<ICreateUserResponse> {
+  public async getAllUsers(req: Request): Promise<IGetUserResponse[]> {
     try {
       const { limit, order, permission, role, name } = req.query;
 
@@ -20,8 +20,8 @@ export class UserController {
         name
       });
       return user;
-    } catch (e) {
-      throw e;
+    } catch (error) {
+      throw error;
     }
   }
 }
