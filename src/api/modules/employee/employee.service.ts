@@ -172,8 +172,11 @@ export class EmployeeService {
         contract: input.contract,
       });
       return response;
-    } catch (e) {
-      throw e;
+    } catch (error: any) {
+      if(error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      }
+      throw error;
     }
   }
 
