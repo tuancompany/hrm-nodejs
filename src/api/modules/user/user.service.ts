@@ -49,8 +49,6 @@ export class UserService {
       if(name) {
         options.name = name;
       }
-      console.log('options', options);
-  
   
       const user = await this.userGateway.getAllUsers(options);
       return user;

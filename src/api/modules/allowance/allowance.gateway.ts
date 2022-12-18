@@ -1,6 +1,7 @@
 // Connect with Database
 
 import { Allowance } from "../../../db/models/allowance.model";
+import { API_ERROR } from "../../../../shared/constants";
 
 export class AllowanceGateway {
   constructor() {}
@@ -17,8 +18,8 @@ export class AllowanceGateway {
       });
 
       return allowances;
-    } catch (e) {
-      console.log("error", e);
+    } catch (error) {
+      throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }
 }

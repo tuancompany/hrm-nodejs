@@ -85,18 +85,23 @@ export class UserGateway {
     role?: string;
     name?: string;
   }): Promise<IGetUserResponse[]> {
+
     let queryConstraint: {
       attributes?: string[];
       include?: {
         model: ModelType;
         attributes: string[];
-        required: boolean;
+        required?: boolean;
         as: string;
+        through: {
+          attributes: []
+        }
       }[];
       limit?: number;
       order?: [string];
       where?: WhereOptions<UserAttributes>;
     } = {};
+    
     queryConstraint.attributes = ["id", "name", "email", "role", "extraInfo"];
 
     if (limit) {
@@ -127,6 +132,9 @@ export class UserGateway {
           attributes: ["id", "name"],
           required: true,
           as: "permission",
+          through: {
+            attributes: []
+          }
         },
       ];
     }

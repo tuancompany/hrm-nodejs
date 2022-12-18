@@ -112,6 +112,10 @@ export class EmployeeGateway {
             ], 
             required: true,
             as: "allowance",
+            // This option required to remove junction table data in response.
+            through: {
+              attributes: []
+            }
           },
           {
             model: Department,
