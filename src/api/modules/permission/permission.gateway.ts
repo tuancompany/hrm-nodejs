@@ -31,7 +31,6 @@ export class PermissionGateway {
 
       return response;
     } catch (error) {
-      console.log("error", error);
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }

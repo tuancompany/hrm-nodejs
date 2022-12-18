@@ -101,7 +101,7 @@ export class EmployeeGateway {
               "coefficientsSalary",
             ],
             required: true,
-            as: "contract",
+            as: "contract"
           },
           {
             model: Allowance,
@@ -111,7 +111,11 @@ export class EmployeeGateway {
               "amount"
             ], 
             required: true,
-            as: "allowance"
+            as: "allowance",
+            // This option required to remove junction table data in response.
+            through: {
+              attributes: []
+            }
           },
           {
             model: Department,

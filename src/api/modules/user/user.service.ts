@@ -1,112 +1,64 @@
-import joi from "joi";
-import bcrypt from "bcryptjs";
 import {
   API_ERROR,
-  USER_PERMISSION,
-  USER_ROLE,
+  SORT
 } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
-import { PermissionGateway } from "./../../modules/permission/permission.gateway";
-import { UserDto } from "./../../../../shared/dtos/user.dto";
-import { PermissionDto } from "./../../../../shared/dtos/permission.dto";
-import { isEmpty } from "lodash";
-import { ICreateUserResponse } from "./../../../../shared/interfaces/create-user.response";
-
-const schema = joi.object({
-  name: joi.string().required().max(15).min(0),
-  email: joi.string().required(),
-  password: joi.string().required(),
-  role: joi
-    .string()
-    .required()
-    .valid(USER_ROLE.ADMIN, USER_ROLE.MEMBER, USER_ROLE.VIEWER),
-  extraInfo: joi.object(),
-});
 
 export class UserService {
   private userGateway: UserGateway;
-  private permisstionGateway: PermissionGateway;
   constructor() {
     this.userGateway = new UserGateway();
-    this.permisstionGateway = new PermissionGateway();
   }
 
-  public async createUser(input: UserDto): Promise<ICreateUserResponse> {
+  public async getAllUsers({ limit, order, permission, role, name }): Promise<any> {
     try {
-      const { error } = schema.validate(input);
-      
-      const { role, email } = input;
-
-      if (error) {
-        throw API_ERROR.BAD_REQUEST(`Invalid request body: ${error}`);
-      }
-
-      // Check user email exists -> return conflict 409 status code
-
-      const userExists = await this.userGateway.getUserByEmail(email);
-      
-      if (!isEmpty(userExists)) {
-        throw API_ERROR.CONFLICT(`User with email ${email} is already exists!`);
-      }
-
-      // If role == "Admin" => email must be ended with @admin.gmail.hrm.com
-      if (role === USER_ROLE.ADMIN && !email.includes("@admin.gmail.hrm.com")) {
-        throw API_ERROR.BAD_REQUEST(
-          `Invalid email: ${email}. Admin role email must be ended with @admin.gmail.hrm.com`
-        );
-      }
-      // Admin -> Full permission
-      // Member -> Read, Edit
-      // Viewer -> Read only.
-      let permissionsName: string[];
-
-      if (role === USER_ROLE.ADMIN) {
-        permissionsName = [
-          USER_PERMISSION.FULL,
-          USER_PERMISSION.ADMIN,
-          USER_PERMISSION.READ_ONLY,
-          USER_PERMISSION.EDIT,
-          USER_PERMISSION.CREATE,
-        ];
-      }
-
-      if(role === USER_ROLE.MEMBER) {
-        permissionsName = [
-            USER_PERMISSION.READ_ONLY,
-            USER_PERMISSION.EDIT
-        ]
-      }
-
-      if(role === USER_ROLE.VIEWER) {
-        permissionsName = [
-            USER_PERMISSION.READ_ONLY
-        ]
+      const orderFormat = order.split(",");
+    
+      if ( parseInt(limit) < 0 ) {
+        throw API_ERROR.BAD_REQUEST(`Query params limit must be >= 0`);
       };
-
-      const permissions: PermissionDto[] =
-        await this.permisstionGateway.getPermissionsByName(permissionsName);
-      
-      if(isEmpty(permissions)) {
-        throw API_ERROR.NOT_FOUND('Not found permissions');
+  
+      if(![SORT.ASC, SORT.DESC].includes(orderFormat[1])) {
+        throw API_ERROR.BAD_REQUEST(`Query params sort is not valid`);
+      }
+  
+      let options: {
+        limit?: number;
+        order?: string;
+        permission?: boolean;
+        role?: string;
+        name?: string;
+      } = {};
+  
+      if(limit) {
+        options.limit = limit;
+      }
+  
+      if(order) {
+        options.order = orderFormat;
+      }
+  
+      if(permission) {
+        options.permission = permission;
+      }
+  
+      if(role) {
+        options.role = role;
       }
 
-      const userCreate: UserDto = {
-        id: input.id,
-        name: input.name.trim(),
-        email: input.email.trim(),
-        password: bcrypt.hashSync(input.password),
-        role: input.role,
-        extraInfo: JSON.stringify(input.extraInfo),
-      };
-
-      const response = await this.userGateway.createUser({
-        user: userCreate,
-        permissions
-      });
-      
-      return response;
-    } catch (error) {
-      throw error;
+      if(name) {
+        options.name = name;
+      }
+  
+      const user = await this.userGateway.getAllUsers(options);
+      return user;
+    } catch(error) {
+      throw API_ERROR.INTERNAL_SERVER(`${error}`);
     }
+   
+  }
+
+  public async getUserPermissions(): Promise<any> {
+
   }
 }

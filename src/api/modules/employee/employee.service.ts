@@ -178,7 +178,7 @@ export class EmployeeService {
   }
 
   public async getEmployee({ limit }): Promise<GetEmployeeResponse[]> {
-    const employees = await this.employeeGateway.getEmployee({limit});
+    const employees = await this.employeeGateway.getEmployee({ limit });
 
     return employees;
     

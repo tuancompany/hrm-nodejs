@@ -74,6 +74,8 @@ export class GetEmployeeResponse {
         for(const key of keys) {
             if(instanceData?.hasOwnProperty(key)) {
                 this[key] = instanceData[key];
+            } else {
+                delete this[key];
             }
         }
     }

@@ -11,12 +11,13 @@ export class UserRoute {
 
     this.router.use(API_PREFIX.USER_PREFIX, this.router); // prefix for api user.
 
-    this.router.get('/get-user', async (req: Request, res: Response) => {
+    this.router.get('/', async (req: Request, res: Response) => {
       try {
-        const user = await this.userController.createUser(req);
+        const user = await this.userController.getAllUsers(req);
         res.json({
           data: user
         });
+
       } catch (error) {
         res.json({
           error
