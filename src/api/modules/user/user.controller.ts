@@ -15,7 +15,7 @@ export class UserController {
       const user = await this.userService.getAllUsers({
         limit,
         order,
-        permission: Boolean(permission),
+        permission,
         role,
         name
       });

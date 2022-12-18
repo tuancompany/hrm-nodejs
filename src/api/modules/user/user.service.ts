@@ -1,7 +1,4 @@
-import {
-  API_ERROR,
-  SORT
-} from "../../../../shared/constants";
+import { API_ERROR, SORT, USER_ROLE } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
 
 export class UserService {
@@ -10,18 +7,39 @@ export class UserService {
     this.userGateway = new UserGateway();
   }
 
-  public async getAllUsers({ limit, order, permission, role, name }): Promise<any> {
+  public async getAllUsers({
+    limit,
+    order,
+    permission,
+    role,
+    name,
+  }): Promise<any> {
     try {
       const orderFormat = order.split(",");
-    
-      if ( parseInt(limit) < 0 ) {
-        throw API_ERROR.BAD_REQUEST(`Query params limit must be >= 0`);
-      };
-  
-      if(![SORT.ASC, SORT.DESC].includes(orderFormat[1])) {
-        throw API_ERROR.BAD_REQUEST(`Query params sort is not valid`);
+
+      if (limit && parseInt(limit) < 0) {
+        throw API_ERROR.BAD_REQUEST("Query params limit must be >= 0");
       }
-  
+
+      if (order && ![SORT.ASC, SORT.DESC].includes(orderFormat[1])) {
+        throw API_ERROR.BAD_REQUEST("Query params sort is not valid");
+      }
+
+      if (permission && !["true", "false"].includes(permission)) {
+        throw API_ERROR.BAD_REQUEST(
+          "Query params permission must be boolean value"
+        );
+      }
+
+      if (
+        role &&
+        ![USER_ROLE.ADMIN, USER_ROLE.MEMBER, USER_ROLE.VIEWER].includes(role)
+      ) {
+        throw API_ERROR.BAD_REQUEST(
+          `Query params role must be ${USER_ROLE.ADMIN}, ${USER_ROLE.MEMBER} or ${USER_ROLE.VIEWER}`
+        );
+      }
+
       let options: {
         limit?: number;
         order?: string;
@@ -29,36 +47,33 @@ export class UserService {
         role?: string;
         name?: string;
       } = {};
-  
-      if(limit) {
+
+      if (limit) {
         options.limit = limit;
       }
-  
-      if(order) {
+
+      if (order) {
         options.order = orderFormat;
       }
-  
-      if(permission) {
-        options.permission = permission;
+
+      if (permission) {
+        options.permission = Boolean(permission);
       }
-  
-      if(role) {
+
+      if (role) {
         options.role = role;
       }
 
-      if(name) {
+      if (name) {
         options.name = name;
       }
-  
+
       const user = await this.userGateway.getAllUsers(options);
       return user;
-    } catch(error) {
+    } catch (error) {
       throw API_ERROR.INTERNAL_SERVER(`${error}`);
     }
-   
   }
 
-  public async getUserPermissions(): Promise<any> {
-
-  }
+  public async getUserPermissions(): Promise<any> {}
 }
