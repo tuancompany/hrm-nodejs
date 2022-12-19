@@ -17,8 +17,18 @@ export class UserController {
         order,
         permission,
         role,
-        name
+        name,
       });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async deleteUser(req: Request): Promise<IGetUserResponse | {}> {
+    try {
+      const { userId } = req.params;
+      const user = await this.userService.deleteUser({ userId });
       return user;
     } catch (error) {
       throw error;

@@ -15,6 +15,7 @@ export class UserRoute {
       try {
         const user = await this.userController.getAllUsers(req);
         res.json({
+          status: 200,
           data: user
         });
 
@@ -25,6 +26,19 @@ export class UserRoute {
       }
     });
 
+    this.router.delete('/:userId', async (req: Request, res: Response) => {
+      try {
+        const user = await this.userController.deleteUser(req);
+        res.json({
+          status: 200,
+          data: user,
+        })
+      } catch (error) {
+        res.json({
+          error
+        });
+      }
+    });
   }
 
   public routes(): IRouter {

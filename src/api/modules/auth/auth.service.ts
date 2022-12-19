@@ -52,9 +52,9 @@ export class AuthService {
 
       // Check user email exists -> return conflict 409 status code
 
-      const userExists = await this.userGateway.getUserByEmail(email);
+      const existedUser = await this.userGateway.getUserByEmail(email);
       
-      if (!isEmpty(userExists)) {
+      if (!isEmpty(existedUser)) {
         throw API_ERROR.CONFLICT(`User with email ${email} is already exists!`);
       }
 

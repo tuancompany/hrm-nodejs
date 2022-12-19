@@ -28,6 +28,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
+      is_deleted: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

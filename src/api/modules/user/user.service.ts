@@ -1,6 +1,7 @@
-import { IGetUserResponse } from "../../../../shared/interfaces/get-user.response";
+import { GetUserResponse, IGetUserResponse } from "../../../../shared/interfaces/get-user.response";
 import { API_ERROR, SORT, USER_ROLE } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
+import { isEmpty } from "lodash";
 
 export class UserService {
   private userGateway: UserGateway;
@@ -44,7 +45,7 @@ export class UserService {
       let options: {
         limit?: number;
         order?: string;
-        permission?: boolean;
+        permission?: string;
         role?: string;
         name?: string;
       } = {};
@@ -58,7 +59,7 @@ export class UserService {
       }
 
       if (permission) {
-        options.permission = Boolean(permission);
+        options.permission = permission;
       }
 
       if (role) {
@@ -72,12 +73,41 @@ export class UserService {
       const user = await this.userGateway.getAllUsers(options);
       return user;
     } catch (error: any) {
-      if(error.code === 500) {
-        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
       }
       throw error;
     }
   }
 
   public async getUserPermissions(): Promise<any> {}
+
+  public async deleteUser({ userId }): Promise<IGetUserResponse> {
+    try {
+      const existedUser = await this.userGateway.getUserById({ userId });
+
+      if(existedUser && existedUser.isDeleted) {
+        throw API_ERROR.NOT_FOUND(`User with id ${userId} has been deleted`);
+      }
+
+      if (isEmpty(existedUser)) {
+        throw API_ERROR.NOT_FOUND(`User with id ${userId} is not exists !`);
+      }
+
+      await this.userGateway.deleteUser({ userId });
+
+      return new GetUserResponse({
+        id: existedUser.id,
+        name: existedUser.name,
+        email: existedUser.email,
+        role: existedUser.role,
+        extraInfo: existedUser.extraInfo
+      });
+    } catch (error: any) {
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
+      }
+      throw error;
+    }
+  }
 }
