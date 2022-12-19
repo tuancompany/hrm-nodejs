@@ -14,7 +14,9 @@ export class EmployeeRoute {
     this.router.post("/", async (req: Request, res: Response) => {
       try {
         const response = await this.employeeController.createEmployee(req);
-        res.json({ data: response });
+        res.json({ 
+          status: 201,
+          data: response });
       } catch (error) {
         res.json({ error });
       }
@@ -23,11 +25,26 @@ export class EmployeeRoute {
     this.router.get("/", async (req: Request, res: Response) => {
       try {
         const response = await this.employeeController.getEmployee(req);
-        res.json({ data: response });
+        res.json({ 
+          status: 200,
+          data: response 
+        });
       } catch (error) {
         res.json({ error });
       }
     });
+
+    this.router.delete('/:employeeId', async (req: Request, res: Response) => {
+      try {
+        const response = await this.employeeController.deleteEmployee(req);
+        res.json({
+          status: 200,
+          data: response
+        })
+      } catch (error) {
+        res.json({ error });
+      }
+    })
   }
 
   public routes(): IRouter {

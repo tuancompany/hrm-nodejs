@@ -9,7 +9,10 @@ import { Degree } from "./../../../db/models/degree.model";
 import { Allowance } from "./../../../db/models/allowance.model";
 
 import { CreateEmployeeResponse } from "./../../../../shared/interfaces/create-employee.response";
-import { GetEmployeeResponse, IGetEmployeeResponse } from "./../../../../shared/interfaces/get-employee.response";
+import {
+  GetEmployeeResponse,
+  IGetEmployeeResponse,
+} from "./../../../../shared/interfaces/get-employee.response";
 import { EmployeeEntity } from "./../../../../shared/entity/employee.entity";
 import { ContractEntity } from "./../../../../shared/entity/contract.entity";
 import { EmployeeAllowanceEntity } from "./../../../../shared/entity/employee-allowance.entity";
@@ -27,7 +30,9 @@ import { isEmpty } from "lodash";
 export class EmployeeGateway {
   constructor() {}
 
-  async createEmployee({
+  /** @param employee: Employee data from request body  */
+  /** @param contract :  Employee contract from request body*/
+  public async createEmployee({
     employee,
     contract,
   }: {
@@ -70,7 +75,8 @@ export class EmployeeGateway {
     }
   }
 
-  async getEmployee({ limit }): Promise<GetEmployeeResponse[]> {
+  /** @param limit: limit number of response record */
+  public async getEmployee({ limit }): Promise<GetEmployeeResponse[]> {
     try {
       const employees = await Employee.findAll({
         attributes: [
@@ -101,60 +107,44 @@ export class EmployeeGateway {
               "coefficientsSalary",
             ],
             required: true,
-            as: "contract"
+            as: "contract",
           },
           {
             model: Allowance,
-            attributes: [
-              "id",
-              "name",
-              "amount"
-            ], 
+            attributes: ["id", "name", "amount"],
             required: true,
             as: "allowance",
-            // This option required to remove junction table data in response.
+            /** @argument through : to remove junction table data in response */
             through: {
-              attributes: []
-            }
+              attributes: [],
+            },
           },
           {
             model: Department,
-            attributes: [
-              "id",
-              "name"
-            ],
+            attributes: ["id", "name"],
             required: true,
-            as: "department"
+            as: "department",
           },
           {
             model: Part,
-            attributes: [
-              "id",
-              "name"
-            ],
+            attributes: ["id", "name"],
             required: true,
-            as: "part"
-          }, 
+            as: "part",
+          },
           {
             model: Position,
-            attributes: [
-              "id",
-              "name"
-            ],
+            attributes: ["id", "name"],
             required: true,
-            as: "position"
+            as: "position",
           },
           {
             model: Degree,
-            attributes: [
-              "id",
-              "name"
-            ],
+            attributes: ["id", "name"],
             required: true,
-            as: "degree"
+            as: "degree",
           },
         ],
-        limit
+        limit,
       });
 
       const response: GetEmployeeResponse[] = employees.map((employee) => {
@@ -166,6 +156,53 @@ export class EmployeeGateway {
       return response;
     } catch (e) {
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${e}`);
+    }
+  }
+
+  public async deleteEmployee({
+    employeeId,
+  }: {
+    employeeId: string;
+  }): Promise<void> {
+    try {
+      await EmployeeAllowance.destroy({
+        where: {
+          employeeId,
+        },
+      });
+
+      await Contract.destroy({
+        where: {
+          employeeId,
+        },
+      });
+
+      await Employee.destroy({
+        where: {
+          id: employeeId,
+        },
+      });
+    } catch (error) {
+      throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
+    }
+  }
+
+  public async getEmployeeById({
+    employeeId,
+  }: {
+    employeeId: string;
+  }): Promise<GetEmployeeResponse | {}> {
+    try {
+      const employee = await Employee.findByPk(employeeId);
+
+      if (!employee) {
+        return {};
+      }
+
+      const response = employee.get({ plain: true });
+      return response;
+    } catch (error) {
+      throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }
 }

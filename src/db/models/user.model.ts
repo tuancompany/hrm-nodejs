@@ -17,6 +17,7 @@ import { PermissionDto } from "../../../shared/dtos/permission.dto";
     password: string;
     role: string;
     extraInfo: string;
+    isDeleted: boolean;
     createdAt: Date;
     updatedAt: Date;
   }
@@ -56,6 +57,11 @@ import { PermissionDto } from "../../../shared/dtos/permission.dto";
       type: DataTypes.STRING,
       field: "extra_info"
     },
+    isDeleted: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      field: "is_deleted"
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -78,6 +84,7 @@ import { PermissionDto } from "../../../shared/dtos/permission.dto";
     public password: string;
     public role: string;
     public extraInfo: string;
+    public isDeleted: boolean;
     public createdAt: Date;
     public updatedAt: Date;
   

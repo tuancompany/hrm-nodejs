@@ -22,4 +22,11 @@ export class EmployeeController {
     const response = await this.employeeService.getEmployee({ limit });
     return response;
   }
+
+  public async deleteEmployee(req: Request): Promise<any> {
+    const { employeeId } = req.params;
+    const response = await this.employeeService.deleteEmployee({ employeeId });
+
+    return response;
+  }
 }

@@ -6,7 +6,8 @@ export class IGetUserResponse {
     email: string;
     password?: string;
     role: string;
-    permission?: PermissionDto[]
+    permission?: PermissionDto[];
+    isDeleted?: boolean;
     extraInfo: string;
     createdAt?: Date;
     updatedAt?: Date;
@@ -20,6 +21,7 @@ export class GetUserResponse {
     public role: string = '';
     public extraInfo: string = '';
     public permission?: PermissionDto[] = [];
+    public isDeleted?: boolean = false;
     public createdAt?: Date;
     public updatedAt?: Date;
 

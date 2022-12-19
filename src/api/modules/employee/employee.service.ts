@@ -14,7 +14,6 @@ import { PartGateway } from "../part/part.gateway";
 import { PositionGateway } from "../position/position.gateway";
 import { DegreeGateway } from "../degree/degree.gateway";
 
-
 import { DepartmentDto } from "./../../../../shared/dtos/department.dto";
 import { PartDto } from "./../../../../shared/dtos/part.dto";
 import { PositionDto } from "./../../../../shared/dtos/position.dto";
@@ -35,7 +34,7 @@ const schema = joi.object({
       id: joi.string().required().uuid(),
       name: joi.string().required().max(20).min(0),
       amount: joi.number().required(),
-      content: joi.string().allow('').allow(null),
+      content: joi.string().allow("").allow(null),
     })
     .required(),
   contract: joi
@@ -61,8 +60,7 @@ export class EmployeeService {
   private partGateway: PartGateway;
   private positionGateway: PositionGateway;
   private degreeGateway: DegreeGateway;
-  // private contractGateway: ContractGateway;
-  // You can declare another service here
+
   constructor() {
     this.employeeGateway = new EmployeeGateway();
     this.allowanceGateway = new AllowanceGateway();
@@ -70,10 +68,11 @@ export class EmployeeService {
     this.partGateway = new PartGateway();
     this.positionGateway = new PositionGateway();
     this.degreeGateway = new DegreeGateway();
-    // this.contractGateway = new ContractGateway();
   }
 
-  public async createEmployee(input: EmployeeDto): Promise<CreateEmployeeResponse> {
+  public async createEmployee(
+    input: EmployeeDto
+  ): Promise<CreateEmployeeResponse> {
     try {
       const { error } = schema.validate(input);
 
@@ -88,25 +87,33 @@ export class EmployeeService {
         throw API_ERROR.NOT_FOUND("Not found allowance in DB");
       }
 
-      const allowanceFormat: { id: string; name: string; amount: number }[] = allowances.map(
-        (allowance: { id: string; name: string; amount: number }) => ({ id: allowance.id, name: allowance.name.trim(), amount: allowance.amount })
-      );
+      const allowanceFormat: { id: string; name: string; amount: number }[] =
+        allowances.map(
+          (allowance: { id: string; name: string; amount: number }) => ({
+            id: allowance.id,
+            name: allowance.name.trim(),
+            amount: allowance.amount,
+          })
+        );
       let invalidAllowance = [];
 
       input.allowance.forEach((allowance) => {
         if (
-          !allowanceFormat.some(item => 
-            item.id === allowance.id
-            && item.name === allowance.name
-            && item.amount === allowance.amount
-            )
+          !allowanceFormat.some(
+            (item) =>
+              item.id === allowance.id &&
+              item.name === allowance.name &&
+              item.amount === allowance.amount
+          )
         ) {
           invalidAllowance.push(allowance);
         }
       });
 
-      if(!isEmpty(invalidAllowance)) {
-        throw API_ERROR.BAD_REQUEST(`Invalid allowances: ${JSON.stringify(invalidAllowance, null, 2)}`);
+      if (!isEmpty(invalidAllowance)) {
+        throw API_ERROR.BAD_REQUEST(
+          `Invalid allowances: ${JSON.stringify(invalidAllowance, null, 2)}`
+        );
       }
 
       const startDateContract = moment(input.contract.startDate);
@@ -155,12 +162,14 @@ export class EmployeeService {
       }
 
       // Check if degree already existed in DB -> map with this degree -> else create new degree record in degree table.
-      const degree: DegreeDto | {} = await this.degreeGateway.getDegreeById(input.degreeId);
-      if(isEmpty(degree)) {
+      const degree: DegreeDto | {} = await this.degreeGateway.getDegreeById(
+        input.degreeId
+      );
+      if (isEmpty(degree)) {
         throw API_ERROR.NOT_FOUND(
           `Degree with id ${input.degreeId} is not exists !`
         );
-      };
+      }
 
       // Verify valid phone number.
 
@@ -173,8 +182,8 @@ export class EmployeeService {
       });
       return response;
     } catch (error: any) {
-      if(error.code === 500) {
-        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
       }
       throw error;
     }
@@ -184,6 +193,28 @@ export class EmployeeService {
     const employees = await this.employeeGateway.getEmployee({ limit });
 
     return employees;
-    
+  }
+
+  public async deleteEmployee({ employeeId }): Promise<GetEmployeeResponse | {}> {
+    try {
+      const existedEmployee = await this.employeeGateway.getEmployeeById({
+        employeeId,
+      });
+  
+      if (isEmpty(existedEmployee)) {
+        throw API_ERROR.NOT_FOUND(
+          `Employee with id ${employeeId} is not exists !`
+        );
+      }
+  
+      await this.employeeGateway.deleteEmployee({ employeeId });
+  
+      return existedEmployee;
+    } catch (error: any) {
+      if(error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      }
+      throw error;
+    }
   }
 }
