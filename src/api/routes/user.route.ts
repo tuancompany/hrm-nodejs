@@ -11,34 +11,55 @@ export class UserRoute {
 
     this.router.use(API_PREFIX.USER_PREFIX, this.router); // prefix for api user.
 
-    this.router.get('/', async (req: Request, res: Response) => {
+    this.router.get("/", async (req: Request, res: Response) => {
       try {
         const user = await this.userController.getAllUsers(req);
         res.json({
           status: 200,
-          data: user
+          data: user,
         });
-
       } catch (error) {
         res.json({
-          error
-        })
+          error,
+        });
       }
     });
 
-    this.router.delete('/:userId', async (req: Request, res: Response) => {
+    this.router.delete("/:userId", async (req: Request, res: Response) => {
       try {
         const user = await this.userController.deleteUser(req);
         res.json({
           status: 200,
           data: user,
-        })
+        });
       } catch (error) {
         res.json({
-          error
+          error,
         });
       }
     });
+
+    this.router.get(
+      "/:userId/permission",
+      async (req: Request, res: Response) => {
+        try {
+          const userPermissions = await this.userController.getUserPermissions(
+            req
+          );
+          res.json({
+            status: 200,
+            data: {
+              userId: req.params.userId,
+              permissions: userPermissions,
+            },
+          });
+        } catch (error) {
+          res.json({
+            error,
+          });
+        }
+      }
+    );
   }
 
   public routes(): IRouter {

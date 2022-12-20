@@ -14,9 +14,10 @@ import {
 } from "./../../../../shared/interfaces/get-user.response";
 import { PermissionDto } from "./../../../../shared/dtos/permission.dto";
 import { UserPermissionEntity } from "./../../../../shared/entity/user-permission.entity";
-import { ModelType, WhereOptions } from "sequelize";
+import { ModelType, Op, WhereOptions } from "sequelize";
 import { Permission } from "./../../../db/models/permission.model";
 import { API_ERROR } from "./../../../../shared/constants";
+import { GetPermissionResponse } from "./../../../../shared/interfaces/get-permission.response";
 
 export class UserGateway {
   constructor() {}
@@ -210,6 +211,42 @@ export class UserGateway {
           },
         }
       );
+    } catch (error) {
+      throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
+    }
+  }
+
+  public async getUserPermissions({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<GetPermissionResponse[]> {
+    try {
+      const userPermissions: UserPermission[] = await UserPermission.findAll({
+        where: {
+          userId,
+        },
+      });
+
+      const permissionIds = userPermissions.map((userPermission) => {
+        const plainUserPermission = userPermission.get({ plain: true });
+        return plainUserPermission.permissionId;
+      });
+
+      const permissions: Permission[] = await Permission.findAll({
+        where: {
+          id: {
+            [Op.in]: permissionIds,
+          },
+        },
+      });
+
+      const response = permissions.map((permission) => {
+        const plainPermission = permission.get({ plain: true });
+        return plainPermission;
+      });
+
+      return response;
     } catch (error) {
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
