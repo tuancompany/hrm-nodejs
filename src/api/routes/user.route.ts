@@ -39,6 +39,23 @@ export class UserRoute {
         });
       }
     });
+
+    this.router.get('/:userId/permission', async (req: Request, res: Response) => {
+      try {
+        const userPermissions = await this.userController.getUserPermissions(req);
+        res.json({
+          status: 200,
+          data: {
+            userId: req.params.userId,
+            permissions: userPermissions
+          }
+        });
+      } catch (error) {
+        res.json({
+          error
+        })
+      }
+    });
   }
 
   public routes(): IRouter {

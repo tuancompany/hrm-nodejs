@@ -2,6 +2,7 @@ import { GetUserResponse, IGetUserResponse } from "../../../../shared/interfaces
 import { API_ERROR, SORT, USER_ROLE } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
 import { isEmpty } from "lodash";
+import { GetPermissionResponse } from "../../../../shared/interfaces/get-permission.response";
 
 export class UserService {
   private userGateway: UserGateway;
@@ -80,8 +81,6 @@ export class UserService {
     }
   }
 
-  public async getUserPermissions(): Promise<any> {}
-
   public async deleteUser({ userId }): Promise<IGetUserResponse> {
     try {
       const existedUser = await this.userGateway.getUserById({ userId });
@@ -103,6 +102,31 @@ export class UserService {
         role: existedUser.role,
         extraInfo: existedUser.extraInfo
       });
+    } catch (error: any) {
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
+      }
+      throw error;
+    }
+  }
+
+  public async getUserPermissions({userId}): Promise<GetPermissionResponse[]> {
+    try {
+      const existedUser = await this.userGateway.getUserById({ userId });
+
+      if(existedUser && existedUser.isDeleted) {
+        throw API_ERROR.NOT_FOUND(`User with id ${userId} has been deleted`);
+      }
+
+      if (isEmpty(existedUser)) {
+        throw API_ERROR.NOT_FOUND(`User with id ${userId} is not exists !`);
+      }
+
+      const permissions = await this.userGateway.getUserPermissions({ userId });
+
+      const response = permissions.map(permission => new GetPermissionResponse(permission));
+      
+      return response;
     } catch (error: any) {
       if (error.code === 500) {
         throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);

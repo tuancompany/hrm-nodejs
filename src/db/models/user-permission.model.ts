@@ -5,12 +5,14 @@ import {
   ModelScopeOptions,
   ModelValidateOptions,
 } from "sequelize";
+import { PermissionDto } from "../../../shared/dtos/permission.dto";
 
 export interface UserPermissionAttributes {
   id: string;
   licensed: number;
   userId: string;
   permissionId: string;
+  permission?: PermissionDto[];
   createdAt: Date;
   updatedAt: Date;
 }
