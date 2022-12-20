@@ -1,4 +1,7 @@
-import { GetUserResponse, IGetUserResponse } from "../../../../shared/interfaces/get-user.response";
+import {
+  GetUserResponse,
+  IGetUserResponse,
+} from "../../../../shared/interfaces/get-user.response";
 import { API_ERROR, SORT, USER_ROLE } from "../../../../shared/constants";
 import { UserGateway } from "./user.gateway";
 import { isEmpty } from "lodash";
@@ -85,7 +88,7 @@ export class UserService {
     try {
       const existedUser = await this.userGateway.getUserById({ userId });
 
-      if(existedUser && existedUser.isDeleted) {
+      if (existedUser && existedUser.isDeleted) {
         throw API_ERROR.NOT_FOUND(`User with id ${userId} has been deleted`);
       }
 
@@ -100,7 +103,7 @@ export class UserService {
         name: existedUser.name,
         email: existedUser.email,
         role: existedUser.role,
-        extraInfo: existedUser.extraInfo
+        extraInfo: existedUser.extraInfo,
       });
     } catch (error: any) {
       if (error.code === 500) {
@@ -110,11 +113,13 @@ export class UserService {
     }
   }
 
-  public async getUserPermissions({userId}): Promise<GetPermissionResponse[]> {
+  public async getUserPermissions({
+    userId,
+  }): Promise<GetPermissionResponse[]> {
     try {
       const existedUser = await this.userGateway.getUserById({ userId });
 
-      if(existedUser && existedUser.isDeleted) {
+      if (existedUser && existedUser.isDeleted) {
         throw API_ERROR.NOT_FOUND(`User with id ${userId} has been deleted`);
       }
 
@@ -124,8 +129,10 @@ export class UserService {
 
       const permissions = await this.userGateway.getUserPermissions({ userId });
 
-      const response = permissions.map(permission => new GetPermissionResponse(permission));
-      
+      const response = permissions.map(
+        (permission) => new GetPermissionResponse(permission)
+      );
+
       return response;
     } catch (error: any) {
       if (error.code === 500) {

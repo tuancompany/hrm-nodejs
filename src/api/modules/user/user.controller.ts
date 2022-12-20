@@ -36,10 +36,14 @@ export class UserController {
     }
   }
 
-  public async getUserPermissions(req: Request): Promise<GetPermissionResponse[]> {
+  public async getUserPermissions(
+    req: Request
+  ): Promise<GetPermissionResponse[]> {
     try {
       const { userId } = req.params;
-      const userPermissions = await this.userService.getUserPermissions({userId});
+      const userPermissions = await this.userService.getUserPermissions({
+        userId,
+      });
       return userPermissions;
     } catch (error) {
       throw error;

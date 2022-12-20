@@ -225,7 +225,7 @@ export class UserGateway {
       const userPermissions: UserPermission[] = await UserPermission.findAll({
         where: {
           userId,
-        }
+        },
       });
 
       const permissionIds = userPermissions.map((userPermission) => {
@@ -236,18 +236,17 @@ export class UserGateway {
       const permissions: Permission[] = await Permission.findAll({
         where: {
           id: {
-            [Op.in]: permissionIds
-          }
-        }
+            [Op.in]: permissionIds,
+          },
+        },
       });
 
-      const response = permissions.map(permission => {
-        const plainPermission = permission.get({plain: true});
-        return plainPermission
+      const response = permissions.map((permission) => {
+        const plainPermission = permission.get({ plain: true });
+        return plainPermission;
       });
 
       return response;
-
     } catch (error) {
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
