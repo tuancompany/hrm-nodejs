@@ -44,7 +44,15 @@ export class EmployeeRoute {
       } catch (error) {
         res.json({ error });
       }
-    })
+    });
+
+    this.router.put("/:employeeId", async (req: Request, res: Response) => {
+      try {
+
+      } catch (error) {
+        
+      }
+    });
   }
 
   public routes(): IRouter {

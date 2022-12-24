@@ -61,6 +61,7 @@ export const UserDefinition = {
     allowNull: false,
     type: DataTypes.BOOLEAN,
     field: "is_deleted",
+    defaultValue: false,
   },
   createdAt: {
     allowNull: false,

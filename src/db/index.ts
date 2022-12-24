@@ -41,6 +41,9 @@ import {
   PermissionDetails,
   PermissionDetailsDefinition,
 } from "./models/permission-details.model";
+import { Manager, ManagerDefinition } from "./models/manager.model";
+import { ActionRequest, ActionRequestDefinition } from "./models/action-request.model";
+import { DayOff, DayOffDefinition } from "./models/dayoff.model";
 
 const env = process.env.NODE_ENV || "development";
 
@@ -155,7 +158,21 @@ const modelsInit = [
     definition: PermissionDetailsDefinition,
     tableName: "PermissionDetails"
   },
-
+  {
+    model: Manager,
+    definition: ManagerDefinition,
+    tableName: "Manager"
+  },
+  {
+    model: ActionRequest,
+    definition: ActionRequestDefinition,
+    tableName: "ActionRequest"
+  },
+  {
+    model: DayOff,
+    definition: DayOffDefinition,
+    tableName: "DayOff"
+  }
 ];
 
 modelsInit.forEach((modelInit) => {
@@ -179,7 +196,10 @@ const modelsAssociate = [
   TimeKeeping,
   User,
   Permission,
-  PermissionDetails
+  PermissionDetails,
+  Manager,
+  ActionRequest, 
+  DayOff
 ];
 
 modelsAssociate.forEach((model) => {

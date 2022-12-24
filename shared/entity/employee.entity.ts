@@ -8,6 +8,11 @@ interface IEmployee {
     address: string;
     basicSalary: number;
     imageUrl: string;
+    dateJoined: Date;
+    dateLeft: Date;
+    active: boolean;
+    jobLevel: number;
+    managerId: string;
     departmentId: string;
     partId: string;
     positionId: string;
@@ -24,6 +29,11 @@ export class EmployeeEntity {
     public address: string = '';
     public basicSalary: number = 1;
     public imageUrl: string = '';
+    public dateJoined: Date = new Date();
+    public dateLeft: Date = new Date();
+    public active: boolean = false;
+    public jobLevel: number = 0;
+    public managerId: string = '';
     public departmentId: string = '';
     public partId: string = '';
     public positionId: string = '';

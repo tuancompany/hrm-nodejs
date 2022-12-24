@@ -100,7 +100,7 @@ export class BonusDiscipline
 BonusDiscipline.prototype.associate = function () {
   Employee.hasMany(BonusDiscipline, {
     as: "bonusDiscipline",
-    foreignKey: "employee_id",
+    foreignKey: "employeeId",
   });
   BonusDiscipline.belongsTo(Employee, { as: "employee" });
 };

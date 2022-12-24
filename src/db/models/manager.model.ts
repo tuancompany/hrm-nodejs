@@ -5,32 +5,23 @@ import {
   ModelScopeOptions,
   ModelValidateOptions,
 } from "sequelize";
-import { Allowance } from "./allowance.model";
-import { EmployeeAllowance } from "./employee-allowance.model";
-import { Contract } from "./contract.model";
+
 import { Department } from "./department.model";
 import { Part } from "./part.model";
 import { Position } from "./position.model";
 import { Degree } from "./degree.model";
-// import { ActionRequest } from "./action-request.model";
-// import { Manager } from "./manager.model";
-// import { DayOff } from "./dayoff.model";
+import { Employee } from "./employee.model";
 
-export interface EmployeeAttributes {
+export interface ManagerAttributes {
   id: string;
   name: string;
   gender: string;
   dob: Date;
   phoneNumber: string;
-  citizenIdentification: string;
-  address: string;
-  basicSalary: number;
-  imageUrl: string;
+  email: string;
   dateJoined: Date;
   dateLeft: Date;
   active: boolean;
-  jobLevel: number;
-  managerId: string;
   departmentId: string;
   partId: string;
   positionId: string;
@@ -39,10 +30,10 @@ export interface EmployeeAttributes {
   updatedAt: Date;
 }
 
-export interface EmployeeCreationAttributes
-  extends Optional<EmployeeAttributes, "id"> {}
+export interface ManagerCreationAttributes
+  extends Optional<ManagerAttributes, "id"> {}
 
-export const EmployeeDefinition = {
+export const ManagerDefinition = {
   id: {
     allowNull: false,
     primaryKey: true,
@@ -92,27 +83,22 @@ export const EmployeeDefinition = {
   dateJoined: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'date_joined'
+    field: "date_joined",
   },
   dateLeft: {
     type: DataTypes.DATE,
     allowNull: true,
-    field: 'date_left'
+    field: "date_left",
   },
   active: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    field: 'active'
-  },
-  jobLevel: {
-    type: DataTypes.NUMBER,
-    allowNull: false,
-    field: 'job_level'
+    field: "active",
   },
   managerId: {
     type: DataTypes.UUID,
     allowNull: false,
-    field: 'manager_id'
+    field: "manager_id",
   },
   departmentId: {
     type: DataTypes.UUID,
@@ -146,24 +132,19 @@ export const EmployeeDefinition = {
   },
 };
 
-export class Employee
-  extends Model<EmployeeAttributes, EmployeeCreationAttributes>
-  implements EmployeeAttributes
+export class Manager
+  extends Model<ManagerAttributes, ManagerCreationAttributes>
+  implements ManagerAttributes
 {
   public id: string;
   public name: string;
   public gender: string;
   public dob: Date;
   public phoneNumber: string;
-  public citizenIdentification: string;
-  public address: string;
-  public basicSalary: number;
-  public imageUrl: string;
+  public email: string;
   public dateJoined: Date;
   public dateLeft: Date;
   public active: boolean;
-  public jobLevel: number;
-  public managerId: string;
   public departmentId: string;
   public partId: string;
   public positionId: string;
@@ -176,23 +157,16 @@ export class Employee
   associate: () => void;
 }
 
-Employee.prototype.associate = function () {
-  Employee.hasOne(Contract, {as: 'contract', foreignKey: "employeeId" });
+Manager.prototype.associate = function () {
+  Manager.belongsTo(Department, { as: "department" });
+  Manager.belongsTo(Part, { as: "part" });
   
-  Employee.belongsTo(Department, { as: "department" });
-  Employee.belongsTo(Part, { as: "part" });
-  Employee.belongsTo(Position, { as: "position" });
-  Employee.belongsTo(Degree, { as: "degree" });
+  Part.hasMany(Manager, { foreignKey: "partId" });
+  Manager.belongsTo(Position, { as: "position" });
 
-  Employee.belongsToMany(Allowance, {
-    through: EmployeeAllowance,
-    foreignKey: "employeeId",
-    as: "allowance"
-  });
+  Position.hasMany(Manager, { foreignKey: "positionId" });
+  Manager.belongsTo(Degree, { as: "degree" });
 
-  Allowance.belongsToMany(Employee, {
-    through: EmployeeAllowance,
-    foreignKey: "allowanceId",
-  });
-
+  Manager.hasMany(Employee, { foreignKey: "managerId" });
+  Employee.belongsTo(Manager, { as: "manager" });
 };

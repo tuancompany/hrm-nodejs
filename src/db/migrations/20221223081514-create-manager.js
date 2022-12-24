@@ -1,11 +1,12 @@
-"use strict";
+'use strict';
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: function (queryInterface, Sequelize) {
-    return queryInterface.createTable("Employee", {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('Manager', {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.UUID,
+        type: Sequelize.UUID
       },
       name: {
         type: Sequelize.STRING,
@@ -23,21 +24,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      citizen_identification: {
+      email: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      address: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      basic_salary: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      image_url: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       date_joined: {
         type: Sequelize.DATE,
@@ -49,15 +38,6 @@ module.exports = {
       },
       active: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
-      job_level: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      manager_id: {
-        type: Sequelize.UUID,
         allowNull: false,
       },
       department_id: {
@@ -100,9 +80,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+    
     });
   },
-  down: function (queryInterface, Sequelize) {
-    return queryInterface.dropTable("Employee");
-  },
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('Manager');
+  }
 };
