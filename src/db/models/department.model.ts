@@ -6,6 +6,7 @@ import {
   ModelValidateOptions,
 } from "sequelize";
 import { Employee } from "./employee.model";
+import { Manager } from "./manager.model";
 
 export interface DepartmentAttributes {
   id: string;
@@ -57,4 +58,5 @@ export class Department
 
 Department.prototype.associate = function () {
   Department.hasMany(Employee, { foreignKey: "departmentId" });
+  Department.hasMany(Manager, { foreignKey: "departmentId" })
 };

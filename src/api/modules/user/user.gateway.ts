@@ -104,8 +104,8 @@ export class UserGateway {
           attributes: string[];
           required?: boolean;
           as: string;
-          through: {
-            attributes: [];
+          through?: {
+            attributes: undefined[];
           };
         }[];
         limit?: number;

@@ -18,8 +18,13 @@ export class EmployeeController {
   }
 
   public async getEmployee(req: Request): Promise<GetEmployeeResponse[]> {
-    const { limit } = req.query;
-    const response = await this.employeeService.getEmployee({ limit });
+    const { limit, order, allowance, contract } = req.query;
+    const response = await this.employeeService.getEmployee({
+      limit,
+      order,
+      allowance,
+      contract,
+    });
     return response;
   }
 

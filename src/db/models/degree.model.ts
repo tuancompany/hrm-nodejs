@@ -6,6 +6,7 @@ import {
   ModelValidateOptions,
 } from "sequelize";
 import { Employee } from "./employee.model";
+import { Manager } from "./manager.model";
 
 export interface DegreeAttributes {
   id: string;
@@ -57,4 +58,5 @@ export class Degree
 
 Degree.prototype.associate = function () {
   Degree.hasMany(Employee, { as: "employee", foreignKey: "degreeId" });
+  Degree.hasMany(Manager, { as: "employee", foreignKey: "degreeId" });
 };

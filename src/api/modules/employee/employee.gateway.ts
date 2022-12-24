@@ -1,5 +1,9 @@
 // Connect with Database
-import { Employee } from "./../../../db/models/employee.model";
+import { sequelize } from "../../../db";
+import {
+  Employee,
+  EmployeeAttributes,
+} from "./../../../db/models/employee.model";
 import { EmployeeAllowance } from "../../../db/models/employee-allowance.model";
 import { Contract } from "../../../db/models/contract.model";
 import { Department } from "./../../../db/models/department.model";
@@ -7,6 +11,7 @@ import { Part } from "./../../../db/models/part.model";
 import { Position } from "./../../../db/models/position.model";
 import { Degree } from "./../../../db/models/degree.model";
 import { Allowance } from "./../../../db/models/allowance.model";
+import { Manager } from "./../../../db/models/manager.model";
 
 import { CreateEmployeeResponse } from "./../../../../shared/interfaces/create-employee.response";
 import {
@@ -19,8 +24,9 @@ import { EmployeeAllowanceEntity } from "./../../../../shared/entity/employee-al
 import { EmployeeDto } from "shared/dtos/employee.dto";
 import { ContractDto } from "shared/dtos/contract.dto";
 import { v4 as uuidv4 } from "uuid";
-import { API_ERROR } from "./../../../../shared/constants";
+import { API_ERROR, QUERY_ATTRIBUTES } from "./../../../../shared/constants";
 import { isEmpty } from "lodash";
+import { ModelType, WhereOptions } from "sequelize";
 
 /**
  * middleware to check whether user has access to a specific endpoint
@@ -76,76 +82,112 @@ export class EmployeeGateway {
   }
 
   /** @param limit: limit number of response record */
-  public async getEmployee({ limit }): Promise<GetEmployeeResponse[]> {
+  /** @param order: order will sourt order of response record */
+  /** @param allowance: If allowance is true, response employee attach with allowance   */
+  /** @param contract: If contract is true, response employee attach with contract  */
+  public async getEmployee({
+    limit,
+    order,
+    allowance,
+    contract,
+  }: {
+    limit?: number;
+    order?: string;
+    allowance?: string;
+    contract?: string;
+  }): Promise<GetEmployeeResponse[]> {
     try {
-      const employees = await Employee.findAll({
-        attributes: [
-          "id",
-          "name",
-          "gender",
-          "dob",
-          "phoneNumber",
-          "citizenIdentification",
-          "address",
-          "basicSalary",
-          "imageUrl",
-          "partId",
-          "positionId",
-          "degreeId",
-        ],
-        include: [
-          {
-            model: Contract,
-            attributes: [
-              "id",
-              "startDate",
-              "endDate",
-              "signedDate",
-              "content",
-              "timesSigned",
-              "deadline",
-              "coefficientsSalary",
-            ],
-            required: true,
-            as: "contract",
-          },
-          {
-            model: Allowance,
-            attributes: ["id", "name", "amount"],
-            required: true,
-            as: "allowance",
-            /** @argument through : to remove junction table data in response */
-            through: {
-              attributes: [],
+
+      let queryConstraint: {
+        attributes?: string[];
+        include?: {
+          model: ModelType;
+          attributes: string[];
+          required?: boolean;
+          as?: string;
+          through?: {
+            attributes: undefined[];
+          };
+        }[];
+        limit?: number;
+        order?: [string];
+        where?: WhereOptions<EmployeeAttributes>;
+      } = {};
+
+      queryConstraint.attributes = QUERY_ATTRIBUTES.GET_EMPLOYEE;
+      queryConstraint.include = [
+        {
+          model: Department,
+          attributes: ["id", "name"],
+          required: true,
+          as: "department",
+        },
+        {
+          model: Part,
+          attributes: ["id", "name"],
+          required: true,
+          as: "part",
+        },
+        {
+          model: Position,
+          attributes: ["id", "name"],
+          required: true,
+          as: "position",
+        },
+        {
+          model: Degree,
+          attributes: ["id", "name"],
+          required: true,
+          as: "degree",
+        },
+        {
+          model: Manager,
+          attributes: QUERY_ATTRIBUTES.GET_MANAGER,
+          required: true,
+          as: "manager"
+        }
+      ];
+
+      if (limit) {
+        queryConstraint.limit = limit;
+      }
+
+      if (order) {
+        queryConstraint.order = [order];
+      }
+
+      if (allowance === "true") {
+        queryConstraint.include = [
+          ...queryConstraint.include,
+          ...[
+            {
+              model: Allowance,
+              attributes: ["id", "name", "amount"],
+              required: true,
+              as: "allowance",
+              /** @argument through : to remove junction table data in response */
+              through: {
+                attributes: [],
+              },
             },
-          },
-          {
-            model: Department,
-            attributes: ["id", "name"],
-            required: true,
-            as: "department",
-          },
-          {
-            model: Part,
-            attributes: ["id", "name"],
-            required: true,
-            as: "part",
-          },
-          {
-            model: Position,
-            attributes: ["id", "name"],
-            required: true,
-            as: "position",
-          },
-          {
-            model: Degree,
-            attributes: ["id", "name"],
-            required: true,
-            as: "degree",
-          },
-        ],
-        limit,
-      });
+          ],
+        ];
+      }
+
+      if (contract === "true") {
+        queryConstraint.include = [
+          ...queryConstraint.include,
+          ...[
+            {
+              model: Contract,
+              attributes: QUERY_ATTRIBUTES.GET_CONTRACT,
+              required: true,
+              as: "contract",
+            },
+          ],
+        ];
+      }
+      const employees = await Employee.findAll(queryConstraint);
 
       const response: GetEmployeeResponse[] = employees.map((employee) => {
         const plainObject: IGetEmployeeResponse = employee.get({ plain: true });
@@ -159,30 +201,38 @@ export class EmployeeGateway {
     }
   }
 
+  /** @function transaction use to create a transaction to handle case if any error occurs  when delete employee, then rollback*/
   public async deleteEmployee({
     employeeId,
   }: {
     employeeId: string;
   }): Promise<void> {
+    const t = await sequelize.transaction();
     try {
       await EmployeeAllowance.destroy({
         where: {
           employeeId,
         },
+        transaction: t,
       });
 
       await Contract.destroy({
         where: {
           employeeId,
         },
+        transaction: t,
       });
 
       await Employee.destroy({
         where: {
           id: employeeId,
         },
+        transaction: t,
       });
+
+      await t.commit();
     } catch (error) {
+      t.rollback();
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }
@@ -205,4 +255,6 @@ export class EmployeeGateway {
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }
+
+  public async updateEmployee({ employeeId, data }): Promise<any> {}
 }

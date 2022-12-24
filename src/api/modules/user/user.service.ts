@@ -21,13 +21,11 @@ export class UserService {
     name,
   }): Promise<IGetUserResponse[]> {
     try {
-      const orderFormat = order.split(",");
-
       if (limit && parseInt(limit) < 0) {
         throw API_ERROR.BAD_REQUEST("Query params limit must be >= 0");
       }
 
-      if (order && ![SORT.ASC, SORT.DESC].includes(orderFormat[1])) {
+      if (order && ![SORT.ASC, SORT.DESC].includes(order.split(",")[1])) {
         throw API_ERROR.BAD_REQUEST("Query params sort is not valid");
       }
 
@@ -59,7 +57,7 @@ export class UserService {
       }
 
       if (order) {
-        options.order = orderFormat;
+        options.order = order.split(",");
       }
 
       if (permission) {

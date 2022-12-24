@@ -3,7 +3,7 @@ import { EmployeeGateway } from "./employee.gateway";
 import { CreateEmployeeResponse } from "./../../../../shared/interfaces/create-employee.response";
 import { GetEmployeeResponse } from "./../../../../shared/interfaces/get-employee.response";
 import joi from "joi";
-import { API_ERROR } from "./../../../../shared/constants";
+import { API_ERROR, SORT } from "./../../../../shared/constants";
 import { AllowanceGateway } from "../allowance/allowance.gateway";
 import { isEmpty } from "lodash";
 import { AllowanceDto } from "shared/dtos/allowance.dto";
@@ -28,6 +28,11 @@ const schema = joi.object({
   address: joi.string(),
   basicSalary: joi.number().required(),
   imageUrl: joi.string(),
+  dateJoined: joi.date().raw(),
+  dateLeft: joi.date().raw().allow(null),
+  active: joi.boolean(),
+  jobLevel: joi.number().valid(1, 2, 3, 4, 5, 6),
+  managerId: joi.string().required().uuid(),
   allowance: joi
     .array()
     .items({
@@ -132,6 +137,8 @@ export class EmployeeService {
         );
       }
 
+      // Check manager exists.
+
       // Check department exists
       const department: DepartmentDto | {} =
         await this.departmentGateway.getDepartmentById(input.departmentId);
@@ -189,32 +196,91 @@ export class EmployeeService {
     }
   }
 
-  public async getEmployee({ limit }): Promise<GetEmployeeResponse[]> {
-    const employees = await this.employeeGateway.getEmployee({ limit });
+  public async getEmployee({
+    limit,
+    order,
+    allowance,
+    contract,
+  }): Promise<GetEmployeeResponse[]> {
+    try {
+      if (limit && parseInt(limit) < 0) {
+        throw API_ERROR.BAD_REQUEST("Query params limit must be >= 0");
+      }
 
-    return employees;
+      if (order && ![SORT.ASC, SORT.DESC].includes(order.split(",")[1])) {
+        throw API_ERROR.BAD_REQUEST("Query params sort is not valid");
+      }
+
+      if (allowance && !["true", "false"].includes(allowance)) {
+        throw API_ERROR.BAD_REQUEST(
+          "Query params allowance must be boolean value"
+        );
+      }
+
+      if (contract && !["true", "false"].includes(contract)) {
+        throw API_ERROR.BAD_REQUEST(
+          "Query params contract must be boolean value"
+        );
+      }
+
+      let options: {
+        limit?: number;
+        order?: string;
+        allowance?: string;
+        contract?: string;
+      } = {};
+
+      if (limit) {
+        options.limit = limit;
+      }
+
+      if (order) {
+        options.order = order.split(",");
+      }
+
+      if (allowance) {
+        options.allowance = allowance;
+      }
+
+      if (contract) {
+        options.contract = contract;
+      }
+
+      const employees = await this.employeeGateway.getEmployee(options);
+
+      return employees;
+    } catch (error: any) {
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
+      }
+      throw error;
+    }
   }
 
-  public async deleteEmployee({ employeeId }): Promise<GetEmployeeResponse | {}> {
+  public async deleteEmployee({
+    employeeId,
+  }): Promise<GetEmployeeResponse | {}> {
     try {
       const existedEmployee = await this.employeeGateway.getEmployeeById({
         employeeId,
       });
-  
+
       if (isEmpty(existedEmployee)) {
         throw API_ERROR.NOT_FOUND(
           `Employee with id ${employeeId} is not exists !`
         );
       }
-  
+
       await this.employeeGateway.deleteEmployee({ employeeId });
-  
+
       return existedEmployee;
     } catch (error: any) {
-      if(error.code === 500) {
-        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`)
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
       }
       throw error;
     }
   }
+
+  public async updateEmployee({ employeeId, data }): Promise<any> {}
 }

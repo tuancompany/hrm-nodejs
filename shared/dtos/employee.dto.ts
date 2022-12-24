@@ -10,6 +10,11 @@ export class EmployeeDto extends BaseDto {
   address: string;
   basicSalary: number;
   imageUrl: string;
+  dateJoined: Date;
+  dateLeft: Date;
+  active: boolean;
+  jobLevel: number;
+  managerId: string;
   allowance?: AllowanceDto[];
   contract?: ContractDto;
   departmentId: string;

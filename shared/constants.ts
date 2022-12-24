@@ -3,7 +3,7 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-  ConflictError
+  ConflictError,
 } from "./errors";
 
 export enum HTTP_STATUS {
@@ -65,27 +65,35 @@ export const API_ERROR = {
     return new InternalServerError(message ? message : `INTERNAL SERVER ERROR`);
   },
   UNAUTHORIZED(message: string) {
-    return new UnauthorizedError(message ? `Unauthorized: ${message}` : "Unauthorized")
+    return new UnauthorizedError(
+      message ? `Unauthorized: ${message}` : "Unauthorized"
+    );
   },
-  NOT_FOUND(message: string) { 
-    return new NotFoundError(message ? `Not found error: ${message}` : "Not found error");
+  NOT_FOUND(message: string) {
+    return new NotFoundError(
+      message ? `Not found error: ${message}` : "Not found error"
+    );
   },
   CONFLICT(message: string) {
-    return new ConflictError(message ? `Conflict resource error: ${message}` : "Conflict resource error");
-  }
+    return new ConflictError(
+      message
+        ? `Conflict resource error: ${message}`
+        : "Conflict resource error"
+    );
+  },
 };
 
 export const ALL_VALID_ACCESS_TYPES = [
   "HRM-login",
-  'HRM-get-employees',
-  'HRM-create-employees',
-]
+  "HRM-get-employees",
+  "HRM-create-employees",
+];
 
 export const API_PREFIX = {
-  ROOT_PREFIX: '/api',
-  AUTH_PREFIX: '/auth',
+  ROOT_PREFIX: "/api",
+  AUTH_PREFIX: "/auth",
   EMPLOYEE_PREFIX: "/employee",
-  USER_PREFIX: "/user"
+  USER_PREFIX: "/user",
 };
 // "Full", "Admin", "Read only", "Edit", "Create"
 export const USER_PERMISSION = {
@@ -93,23 +101,66 @@ export const USER_PERMISSION = {
   ADMIN: "Admin",
   READ_ONLY: "Read only",
   EDIT: "Edit",
-  CREATE: "Create"
-}
+  CREATE: "Create",
+};
 
 export const USER_ROLE = {
   ADMIN: "Admin",
   MEMBER: "Member",
-  VIEWER: "Viewer"
-}
+  VIEWER: "Viewer",
+};
 
 export const TOKEN_CONFIG = {
   PASS_PHRASE: "tuan12345",
   EXPIRE_TIME: "1h",
   REFRESH_EXPIRE_TIME: "12",
-  REFRESH_TOKEN_KEY: "HRM_refresh"
-}
+  REFRESH_TOKEN_KEY: "HRM_refresh",
+};
 
 export const SORT = {
-  ASC: 'ASC',
-  DESC: 'DESC'
-}
+  ASC: "ASC",
+  DESC: "DESC",
+};
+
+export const QUERY_ATTRIBUTES = {
+  GET_EMPLOYEE: [
+    "id",
+    "name",
+    "gender",
+    "dob",
+    "phoneNumber",
+    "citizenIdentification",
+    "address",
+    "basicSalary",
+    "imageUrl",
+    "dateJoined",
+    "dateLeft",
+    "active",
+    "jobLevel",
+    "managerId",
+    "partId",
+    "positionId",
+    "degreeId",
+  ],
+  GET_MANAGER: [
+    "id",
+    "name",
+    "gender",
+    "dob",
+    "phoneNumber",
+    "email",
+    "dateJoined",
+    "dateLeft",
+    "active"
+  ],
+  GET_CONTRACT: [
+    "id",
+    "startDate",
+    "endDate",
+    "signedDate",
+    "content",
+    "timesSigned",
+    "deadline",
+    "coefficientsSalary",
+  ]
+};
