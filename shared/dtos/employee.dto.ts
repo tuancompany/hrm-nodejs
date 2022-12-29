@@ -1,6 +1,6 @@
 import { BaseDto } from "./base.dto";
-import { AllowanceDto } from './allowance.dto';
-import { ContractDto } from './contract.dto';
+import { AllowanceDto } from "./allowance.dto";
+import { ContractDto } from "./contract.dto";
 export class EmployeeDto extends BaseDto {
   name: string;
   gender: string;

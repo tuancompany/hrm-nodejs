@@ -1,8 +1,12 @@
-import { EmployeeDto } from "shared/dtos/employee.dto";
+import joi from "joi";
+
 import { EmployeeGateway } from "./employee.gateway";
 import { CreateEmployeeResponse } from "./../../../../shared/interfaces/create-employee.response";
 import { GetEmployeeResponse } from "./../../../../shared/interfaces/get-employee.response";
-import joi from "joi";
+import {
+  IUpdateEmployee,
+  UpdateEmployeeRepsonse,
+} from "./../../../../shared/interfaces/update-employee.response";
 import { API_ERROR, SORT } from "./../../../../shared/constants";
 import { AllowanceGateway } from "../allowance/allowance.gateway";
 import { isEmpty } from "lodash";
@@ -14,50 +18,12 @@ import { PartGateway } from "../part/part.gateway";
 import { PositionGateway } from "../position/position.gateway";
 import { DegreeGateway } from "../degree/degree.gateway";
 
+import { EmployeeDto } from "shared/dtos/employee.dto";
 import { DepartmentDto } from "./../../../../shared/dtos/department.dto";
 import { PartDto } from "./../../../../shared/dtos/part.dto";
 import { PositionDto } from "./../../../../shared/dtos/position.dto";
 import { DegreeDto } from "../../../../shared/dtos/degree.dto";
 
-const schema = joi.object({
-  name: joi.string().required().max(15).min(0),
-  gender: joi.string().required().valid("Male", "Female"),
-  dob: joi.date().raw(),
-  phoneNumber: joi.string().required().min(0).max(20),
-  citizenIdentification: joi.string().min(0).max(40),
-  address: joi.string(),
-  basicSalary: joi.number().required(),
-  imageUrl: joi.string(),
-  dateJoined: joi.date().raw(),
-  dateLeft: joi.date().raw().allow(null),
-  active: joi.boolean(),
-  jobLevel: joi.number().valid(1, 2, 3, 4, 5, 6),
-  managerId: joi.string().required().uuid(),
-  allowance: joi
-    .array()
-    .items({
-      id: joi.string().required().uuid(),
-      name: joi.string().required().max(20).min(0),
-      amount: joi.number().required(),
-      content: joi.string().allow("").allow(null),
-    })
-    .required(),
-  contract: joi
-    .object({
-      startDate: joi.date().required(),
-      endDate: joi.date().required(),
-      signedDate: joi.date().required(),
-      content: joi.string().required().max(5000).min(0),
-      timesSigned: joi.number().required(),
-      deadline: joi.string().required(),
-      coefficientSalary: joi.number().required(),
-    })
-    .required(),
-  departmentId: joi.string().required().uuid(),
-  partId: joi.string().required().uuid(),
-  positionId: joi.string().required().uuid(),
-  degreeId: joi.string().required().uuid(),
-});
 export class EmployeeService {
   private employeeGateway: EmployeeGateway;
   private allowanceGateway: AllowanceGateway;
@@ -78,6 +44,46 @@ export class EmployeeService {
   public async createEmployee(
     input: EmployeeDto
   ): Promise<CreateEmployeeResponse> {
+    const schema = joi.object({
+      name: joi.string().required().max(15).min(0),
+      gender: joi.string().required().valid("Male", "Female"),
+      dob: joi.date().raw(),
+      phoneNumber: joi.string().required().min(0).max(20),
+      citizenIdentification: joi.string().min(0).max(40),
+      address: joi.string(),
+      basicSalary: joi.number().required(),
+      imageUrl: joi.string(),
+      dateJoined: joi.date().raw(),
+      dateLeft: joi.date().raw().allow(null),
+      active: joi.boolean(),
+      jobLevel: joi.number().valid(1, 2, 3, 4, 5, 6),
+      managerId: joi.string().required().uuid(),
+      allowance: joi
+        .array()
+        .items({
+          id: joi.string().required().uuid(),
+          name: joi.string().required().max(20).min(0),
+          amount: joi.number().required(),
+          content: joi.string().allow("").allow(null),
+        })
+        .required(),
+      contract: joi
+        .object({
+          startDate: joi.date().required(),
+          endDate: joi.date().required(),
+          signedDate: joi.date().required(),
+          content: joi.string().required().max(5000).min(0),
+          timesSigned: joi.number().required(),
+          deadline: joi.string().required(),
+          coefficientSalary: joi.number().required(),
+        })
+        .required(),
+      departmentId: joi.string().required().uuid(),
+      partId: joi.string().required().uuid(),
+      positionId: joi.string().required().uuid(),
+      degreeId: joi.string().required().uuid(),
+    });
+
     try {
       const { error } = schema.validate(input);
 
@@ -282,5 +288,55 @@ export class EmployeeService {
     }
   }
 
-  public async updateEmployee({ employeeId, data }): Promise<any> {}
+  public async updateEmployee({
+    employeeId,
+    data,
+  }: {
+    employeeId: string;
+    data: IUpdateEmployee;
+  }): Promise<any> {
+    const schema = joi.object({
+      name: joi.string().required().max(15).min(0),
+      gender: joi.string().required().valid("Male", "Female"),
+      dob: joi.date().raw(),
+      phoneNumber: joi.string().required().min(0).max(20),
+      citizenIdentification: joi.string().min(0).max(40),
+      address: joi.string(),
+      basicSalary: joi.number().required(),
+      imageUrl: joi.string(),
+      allowance: joi.array(),
+      departmentId: joi.string().required().uuid(),
+      partId: joi.string().required().uuid(),
+      positionId: joi.string().required().uuid(),
+      degreeId: joi.string().required().uuid(),
+    });
+
+    try {
+      const { error } = schema.validate(data);
+
+      if (error) {
+        throw API_ERROR.BAD_REQUEST(`Invalid request body: ${error}`);
+      }
+
+      const existedEmployee = await this.employeeGateway.getEmployeeById({employeeId});
+
+      if(isEmpty(existedEmployee)) {
+        throw API_ERROR.NOT_FOUND(`Employee with id ${employeeId} is not exists`);
+      }
+
+      await this.employeeGateway.updateEmployee({
+        employeeId,
+        data,
+      });
+
+      const response = new UpdateEmployeeRepsonse(data);
+
+      return response;
+    } catch (error: any) {
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
+      }
+      throw error;
+    }
+  }
 }

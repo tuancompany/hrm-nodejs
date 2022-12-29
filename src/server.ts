@@ -2,6 +2,7 @@ import * as bodyParser from "body-parser";
 import express from "express";
 import * as http from "http";
 import * as dotenv from "dotenv";
+import cors from "cors";
 
 import { EmployeeRoute } from "./api/routes/employee.route";
 import { UserRoute } from "./api/routes/user.route";
@@ -12,6 +13,10 @@ import { Sequelize, sequelize } from "./db/";
 import { ALL_VALID_ACCESS_TYPES, API_PREFIX } from "./../shared/constants";
 
 dotenv.config();
+const allowedOrigins = ["http://localhost:3000"];
+const options: cors.CorsOptions = {
+  origin: allowedOrigins
+};
 export class Server {
   private readonly app: express.Express;
   private readonly port: string;
@@ -30,6 +35,7 @@ export class Server {
     this.authenticationMiddleware = new AuthenticationMiddleware();
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(cors(options));
 
     //***** */ Auth route: Auth route don't need to attach jwt token into its headers
     // ***** So that we put it above from authentication middleware

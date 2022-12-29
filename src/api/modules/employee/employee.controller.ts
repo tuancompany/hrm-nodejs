@@ -10,28 +10,84 @@ export class EmployeeController {
   }
 
   public async createEmployee(req: Request): Promise<CreateEmployeeResponse> {
-    const requestBody: EmployeeDto = req.body;
+    try {
+      const requestBody: EmployeeDto = req.body;
 
-    // Check role permission of request here
-    const response = await this.employeeService.createEmployee(requestBody);
-    return response;
+      // Check role permission of request here
+      const response = await this.employeeService.createEmployee(requestBody);
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async getEmployee(req: Request): Promise<GetEmployeeResponse[]> {
-    const { limit, order, allowance, contract } = req.query;
-    const response = await this.employeeService.getEmployee({
-      limit,
-      order,
-      allowance,
-      contract,
-    });
-    return response;
+    try {
+      const { limit, order, allowance, contract } = req.query;
+      const response = await this.employeeService.getEmployee({
+        limit,
+        order,
+        allowance,
+        contract,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  public async deleteEmployee(req: Request): Promise<any> {
-    const { employeeId } = req.params;
-    const response = await this.employeeService.deleteEmployee({ employeeId });
+  public async deleteEmployee(req: Request): Promise<GetEmployeeResponse | {}> {
+    try {
+      const { employeeId } = req.params;
+      const response = await this.employeeService.deleteEmployee({
+        employeeId,
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateEmployee(req: Request): Promise<any> {
+    try {
+      const {
+        name,
+        gender,
+        dob,
+        phoneNumber,
+        citizenIdentification,
+        address,
+        basicSalary,
+        imageUrl,
+        allowance,
+        departmentId,
+        partId,
+        positionId,
+        degreeId,
+      } = req.body;
+
+      const response = await this.employeeService.updateEmployee({
+        employeeId: req.params.employeeId,
+        data: {
+          name,
+          gender,
+          dob,
+          phoneNumber,
+          citizenIdentification,
+          address,
+          basicSalary,
+          imageUrl,
+          allowance,
+          departmentId,
+          partId,
+          positionId,
+          degreeId,
+        },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }
