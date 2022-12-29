@@ -83,11 +83,23 @@ export const API_ERROR = {
   },
 };
 
+export const VALID_ACCESS_TYPES = {
+  LOGIN: "HRM-login",
+  GET_EMPLOYEES: "HRM-get-employees",
+  CREATE_EMPLOYEES: "HRM-create-employees",
+  DELETE_EMPLOYEE: "HRM-delete-employee",
+  UPDATE_EMPLOYEE: "HRM-update-employee"
+}
+
 export const ALL_VALID_ACCESS_TYPES = [
-  "HRM-login",
-  "HRM-get-employees",
-  "HRM-create-employees",
+  VALID_ACCESS_TYPES.LOGIN,
+  VALID_ACCESS_TYPES.GET_EMPLOYEES,
+  VALID_ACCESS_TYPES.CREATE_EMPLOYEES,
+  VALID_ACCESS_TYPES.DELETE_EMPLOYEE,
+  VALID_ACCESS_TYPES.UPDATE_EMPLOYEE
 ];
+
+
 
 export const API_PREFIX = {
   ROOT_PREFIX: "/api",

@@ -27,6 +27,7 @@ import { v4 as uuidv4 } from "uuid";
 import { API_ERROR, QUERY_ATTRIBUTES } from "./../../../../shared/constants";
 import { isEmpty } from "lodash";
 import { ModelType, WhereOptions } from "sequelize";
+import { IUpdateEmployee } from "./../../../../shared/interfaces/update-employee.response";
 
 /**
  * middleware to check whether user has access to a specific endpoint
@@ -97,7 +98,6 @@ export class EmployeeGateway {
     contract?: string;
   }): Promise<GetEmployeeResponse[]> {
     try {
-
       let queryConstraint: {
         attributes?: string[];
         include?: {
@@ -144,8 +144,8 @@ export class EmployeeGateway {
           model: Manager,
           attributes: QUERY_ATTRIBUTES.GET_MANAGER,
           required: true,
-          as: "manager"
-        }
+          as: "manager",
+        },
       ];
 
       if (limit) {
@@ -256,5 +256,46 @@ export class EmployeeGateway {
     }
   }
 
-  public async updateEmployee({ employeeId, data }): Promise<any> {}
+  public async updateEmployee({
+    employeeId,
+    data,
+  }: {
+    employeeId: string;
+    data: IUpdateEmployee;
+  }): Promise<void> {
+
+    try {
+      await Employee.update({
+        name: data.name,
+        gender: data.gender,
+        dob: data.dob,
+        phoneNumber: data.phoneNumber,
+        citizenIdentification: data.citizenIdentification,
+        address: data.address,
+        basicSalary: data.basicSalary,
+        imageUrl: data.imageUrl,
+        departmentId: data.departmentId,
+        partId: data.partId,
+        positionId: data.positionId,
+        degreeId: data.degreeId,
+      }, {
+        where: {
+          id: employeeId
+        }
+      });
+
+      data.allowance.map(async item => {
+        await EmployeeAllowance.update({
+          allowanceId: item
+        }, {
+          where: {
+            employeeId,
+          }
+        })
+      });
+
+    } catch (error) {
+      throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
+    }
+  }
 }
