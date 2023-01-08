@@ -1,4 +1,3 @@
-import joi from "joi";
 import bcrypt from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
@@ -19,17 +18,6 @@ import { JwtAuthentication } from "./../../../../shared/helpers/utils/jwt.utils"
 import { SignInRequest, SignInResponse } from "./../../../../shared/interfaces/signin.request";
 import { IGetUserResponse } from "./../../../../shared/interfaces/get-user.response";
 
-const schema = joi.object({
-  name: joi.string().required().max(15).min(0),
-  email: joi.string().required(),
-  password: joi.string().required(),
-  role: joi
-    .string()
-    .required()
-    .valid(USER_ROLE.ADMIN, USER_ROLE.MEMBER, USER_ROLE.VIEWER),
-  extraInfo: joi.object(),
-});
-
 export class AuthService {
   private userGateway: UserGateway;
   private permisstionGateway: PermissionGateway;
@@ -42,13 +30,8 @@ export class AuthService {
 
   public async createUser(input: UserDto): Promise<ICreateUserResponse> {
     try {
-      const { error } = schema.validate(input);
       
       const { role, email } = input;
-
-      if (error) {
-        throw API_ERROR.BAD_REQUEST(`Invalid request body: ${error}`);
-      }
 
       // Check user email exists -> return conflict 409 status code
 
