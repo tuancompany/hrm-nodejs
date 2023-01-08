@@ -241,12 +241,19 @@ export class EmployeeGateway {
     employeeId,
   }: {
     employeeId: string;
-  }): Promise<GetEmployeeResponse | {}> {
+  }): Promise<IGetEmployeeResponse> {
     try {
-      const employee = await Employee.findByPk(employeeId);
+      const employee = await Employee.findByPk(employeeId, {
+        include: {
+          model: Manager,
+          attributes: ["id", "name"],
+          required: true,
+          as: "manager"
+        }
+      });
 
       if (!employee) {
-        return {};
+        return ;
       }
 
       const response = employee.get({ plain: true });
@@ -298,4 +305,6 @@ export class EmployeeGateway {
       throw API_ERROR.INTERNAL_SERVER(`Something went wrong... ${error}`);
     }
   }
+
+  // public async requestAction
 }

@@ -88,7 +88,8 @@ export const VALID_ACCESS_TYPES = {
   GET_EMPLOYEES: "HRM-get-employees",
   CREATE_EMPLOYEES: "HRM-create-employees",
   DELETE_EMPLOYEE: "HRM-delete-employee",
-  UPDATE_EMPLOYEE: "HRM-update-employee"
+  UPDATE_EMPLOYEE: "HRM-update-employee",
+  REQUEST_EMPLOYEE: "HRM-request-employee",
 }
 
 export const ALL_VALID_ACCESS_TYPES = [
@@ -96,7 +97,8 @@ export const ALL_VALID_ACCESS_TYPES = [
   VALID_ACCESS_TYPES.GET_EMPLOYEES,
   VALID_ACCESS_TYPES.CREATE_EMPLOYEES,
   VALID_ACCESS_TYPES.DELETE_EMPLOYEE,
-  VALID_ACCESS_TYPES.UPDATE_EMPLOYEE
+  VALID_ACCESS_TYPES.UPDATE_EMPLOYEE,
+  VALID_ACCESS_TYPES.REQUEST_EMPLOYEE
 ];
 
 
@@ -133,6 +135,14 @@ export const SORT = {
   ASC: "ASC",
   DESC: "DESC",
 };
+
+export const ACTION_REQUEST_TYPE = {
+  LEAVE: "leave",
+  OVER_TIME: "over_time",
+  WFH: "work_from_home",
+  MATERNITY_LEAVE: "maternity_leave",
+  ONSIDE: "onside"
+}
 
 export const QUERY_ATTRIBUTES = {
   GET_EMPLOYEE: [

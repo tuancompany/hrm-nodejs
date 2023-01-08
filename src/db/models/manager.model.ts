@@ -60,25 +60,10 @@ export const ManagerDefinition = {
     allowNull: true,
     field: "phone_number",
   },
-  citizenIdentification: {
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: "citizen_identification",
-  },
-  address: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: "address",
-  },
-  basicSalary: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: "basic_salary",
-  },
-  imageUrl: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: "image_url",
+    field: "email",
   },
   dateJoined: {
     type: DataTypes.DATE,
@@ -94,11 +79,6 @@ export const ManagerDefinition = {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     field: "active",
-  },
-  managerId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    field: "manager_id",
   },
   departmentId: {
     type: DataTypes.UUID,
