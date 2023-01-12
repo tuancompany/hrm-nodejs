@@ -22,7 +22,6 @@ export class ManagerRoute {
         ]),
         async (req: Request, res: Response) => {
           try {
-            console.log('runn manager route')
             const response = await this.managerController.approveActionRequest(
               req
             );
