@@ -4,6 +4,7 @@ import {
   NotFoundError,
   UnauthorizedError,
   ConflictError,
+  UnprocessableError
 } from "./errors";
 
 export enum HTTP_STATUS {
@@ -81,6 +82,9 @@ export const API_ERROR = {
         : "Conflict resource error"
     );
   },
+  UNPROCESSABLE_ENTITY(message: string) {
+    return new UnprocessableError(message ? `Unprocessable error: ${message}`: "Unprocessable error")
+  }
 };
 
 export const VALID_ACCESS_TYPES = {
@@ -90,6 +94,7 @@ export const VALID_ACCESS_TYPES = {
   DELETE_EMPLOYEE: "HRM-delete-employee",
   UPDATE_EMPLOYEE: "HRM-update-employee",
   REQUEST_EMPLOYEE: "HRM-request-employee",
+  APPROVED_REQUEST_ACTION: "HRM-approved-request-action"
 }
 
 export const ALL_VALID_ACCESS_TYPES = [
@@ -98,7 +103,8 @@ export const ALL_VALID_ACCESS_TYPES = [
   VALID_ACCESS_TYPES.CREATE_EMPLOYEES,
   VALID_ACCESS_TYPES.DELETE_EMPLOYEE,
   VALID_ACCESS_TYPES.UPDATE_EMPLOYEE,
-  VALID_ACCESS_TYPES.REQUEST_EMPLOYEE
+  VALID_ACCESS_TYPES.REQUEST_EMPLOYEE,
+  VALID_ACCESS_TYPES.APPROVED_REQUEST_ACTION
 ];
 
 
@@ -108,6 +114,7 @@ export const API_PREFIX = {
   AUTH_PREFIX: "/auth",
   EMPLOYEE_PREFIX: "/employee",
   USER_PREFIX: "/user",
+  MANAGER_PREFIX: "/manager"
 };
 // "Full", "Admin", "Read only", "Edit", "Create"
 export const USER_PERMISSION = {
@@ -137,8 +144,12 @@ export const SORT = {
 };
 
 export const ACTION_REQUEST_TYPE = {
-  LEAVE: "leave",
+  DAY_OFF: "day_off",
   OVER_TIME: "over_time",
+}
+
+export const DAYOFF_TYPE = {
+  LEAVE: "leave",
   WFH: "work_from_home",
   MATERNITY_LEAVE: "maternity_leave",
   ONSIDE: "onside"

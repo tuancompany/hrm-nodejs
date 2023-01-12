@@ -6,3 +6,4 @@ export * from "./internal-server-error";
 export * from "./no-content-error";
 export * from "./api-error.dto";
 export * from "./conflict-error";
+export * from "./unprocessable-error";

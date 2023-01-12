@@ -92,7 +92,26 @@ export class EmployeeRoute {
         }
       );
 
-    this.router.route("/:employeeId/request").post(
+    this.router.route("/:employeeId/overtime/request").post(
+      this.authenticationMiddleware.authorize([
+        VALID_ACCESS_TYPES.REQUEST_EMPLOYEE
+      ]),
+      async (req: Request, res: Response) => {
+        try {
+          const response = await this.employeeController.requestAction(req);
+          res.json({
+            status: 200,
+            data: response
+          })
+        } catch (error) {
+          res.json({
+            error
+          })
+        }
+      }
+    );
+
+    this.router.route("/:employeeId/dayoff/request").post(
       this.authenticationMiddleware.authorize([
         VALID_ACCESS_TYPES.REQUEST_EMPLOYEE
       ]),

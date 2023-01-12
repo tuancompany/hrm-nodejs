@@ -1,11 +1,17 @@
 import { Request } from "express";
-import joi from "joi";
+import joi, { ObjectSchema } from "joi";
 import { EmployeeDto } from "shared/dtos/employee.dto";
 import { CreateEmployeeResponse } from "./../../../../shared/interfaces/create-employee.response";
 import { GetEmployeeResponse } from "./../../../../shared/interfaces/get-employee.response";
-import { IActionRequestResponse } from "./../../../../shared/interfaces/request-action.response";
+import {
+ ActionRequestResponse
+} from "./../../../../shared/interfaces/request-action.response";
 import { EmployeeService } from "./employee.service";
-import { API_ERROR, ACTION_REQUEST_TYPE } from "./../../../../shared/constants";
+import {
+  API_ERROR,
+  ACTION_REQUEST_TYPE,
+  DAYOFF_TYPE,
+} from "./../../../../shared/constants";
 
 export class EmployeeController {
   private employeeService: EmployeeService;
@@ -165,29 +171,71 @@ export class EmployeeController {
     }
   }
 
-  public async requestAction(req: Request): Promise<IActionRequestResponse> {
-    const schema = joi.object({
+  public async requestAction(
+    req: Request
+  ): Promise<ActionRequestResponse> {
+    const schemaOvertime = joi.object({
       managerId: joi.string().required().uuid(),
       expirationDate: joi.date().raw(),
-      type: joi
-        .string()
-        .required()
-        .valid(
-          ACTION_REQUEST_TYPE.LEAVE,
-          ACTION_REQUEST_TYPE.MATERNITY_LEAVE,
-          ACTION_REQUEST_TYPE.ONSIDE,
-          ACTION_REQUEST_TYPE.OVER_TIME,
-          ACTION_REQUEST_TYPE.WFH
-        ),
+      type: joi.string().required().valid(ACTION_REQUEST_TYPE.OVER_TIME),
+      information: joi.object({
+        year: joi.number().required(),
+        month: joi.number().required(),
+        day: joi.number().required(),
+        hour: joi.number().required(),
+        overtimeTypeId: joi.string().uuid(),
+      }),
+    });
+
+    const schemaDayoff = joi.object({
+      managerId: joi.string().required().uuid(),
+      expirationDate: joi.date().raw(),
+      type: joi.string().required().valid(ACTION_REQUEST_TYPE.DAY_OFF),
+      information: joi.object({
+        requestedDate: joi.date().required(),
+        from: joi.date().required(),
+        to: joi.date().required(),
+        type: joi
+          .string()
+          .required()
+          .valid(
+            DAYOFF_TYPE.LEAVE,
+            DAYOFF_TYPE.MATERNITY_LEAVE,
+            DAYOFF_TYPE.ONSIDE,
+            DAYOFF_TYPE.WFH
+          ),
+        reason: joi.string().required(),
+      }),
     });
 
     try {
-      const { managerId, expirationDate, type } = req.body;
+      const { managerId, expirationDate, type, information } = req.body;
+      const { "request-type": requestType }: any = req.headers;
+
+      if (
+        requestType &&
+        ![ACTION_REQUEST_TYPE.DAY_OFF, ACTION_REQUEST_TYPE.OVER_TIME].includes(
+          requestType
+        )
+      ) {
+        throw API_ERROR.UNPROCESSABLE_ENTITY(`Header requestType is not valid`);
+      }
+
+      let schema: ObjectSchema<any>;
+
+      if (requestType === ACTION_REQUEST_TYPE.DAY_OFF) {
+        schema = schemaDayoff;
+      }
+
+      if (requestType === ACTION_REQUEST_TYPE.OVER_TIME) {
+        schema = schemaOvertime;
+      }
 
       const data = {
         managerId,
         expirationDate,
         type,
+        information,
       };
 
       const { error } = schema.validate(data);
