@@ -10,7 +10,6 @@ import {
   UpdateEmployeeRepsonse,
 } from "./../../../../shared/interfaces/update-employee.response";
 import {
-  ActionRequestResponse,
   IActionRequestResponse,
 } from "./../../../../shared/interfaces/request-action.response";
 import { API_ERROR, SORT } from "./../../../../shared/constants";
@@ -296,8 +295,23 @@ export class EmployeeService {
       managerId: string;
       expirationDate: Date;
       type: string;
+      information:
+        | {
+            year: number;
+            month: number;
+            day: number;
+            hour: number;
+            overtimeTypeId: string;
+          }
+        | {
+            requestedDate: Date;
+            from: Date;
+            to: Date;
+            type: string;
+            reason: string;
+          };
     };
-  }): Promise<IActionRequestResponse> {
+  }): Promise<IActionRequestResponse<string>> {
     try {
       // Check manager exists.
       const manager = await this.managerGateway.getManagerById({
@@ -345,13 +359,20 @@ export class EmployeeService {
             expirationDate: data.expirationDate,
             type: data.type,
             approved: false,
+            information: JSON.stringify(data.information),
           },
         }
       );
 
-      const response: ActionRequestResponse = new ActionRequestResponse(
-        requestAction
-      );
+      const response: IActionRequestResponse<string> = {
+        expirationDate: requestAction.expirationDate,
+        type: requestAction.type,
+        approved: requestAction.approved,
+        information: JSON.parse(requestAction.information),
+        employeeId: requestAction.employeeId,
+        managerId: requestAction.managerId,
+      };
+
       return response;
     } catch (error: any) {
       if (error.code === 500) {

@@ -1,21 +1,22 @@
-import { ActionRequestDto } from "../dtos/action-request.dto";
+import { DayoffDto } from "./../dtos/dayoff.dto"
 
-export class ActionRequestEntity {
+export class DayoffEntity {
     public id: string = '';
-    public expirationDate: Date = new Date();
+    public requestedDate: Date = new Date();
+    public from: Date = new Date();
+    public to: Date = new Date();
     public type: string = '';
     public approved: boolean = false;
-    public information: string = "";
+    public reason: string = '';
     public employeeId: string = '';
-    public managerId: string = '';
- 
-    constructor(instanceData?: ActionRequestDto) {
+    
+    constructor(instanceData?: DayoffDto) {
         if(instanceData) {
             this.deserialize(instanceData);
         }
     }
 
-    private deserialize(instanceData?: ActionRequestDto) {
+    private deserialize(instanceData?: DayoffDto) {
         const keys = Object.keys(this);
 
         for(const key of keys) {

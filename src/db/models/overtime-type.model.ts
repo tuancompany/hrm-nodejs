@@ -31,7 +31,7 @@ export const OvertimeTypeDefinition = {
     field: "name",
   },
   coefficients: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
     field: "coefficients",
   },

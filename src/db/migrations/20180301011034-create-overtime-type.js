@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
       coefficients: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
       created_at: {

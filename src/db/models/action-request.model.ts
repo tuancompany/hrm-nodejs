@@ -12,6 +12,7 @@ export interface ActionRequestAttributes {
   expirationDate: Date;
   type: string;
   approved: boolean;
+  information: string;
   employeeId: string;
   managerId: string;
   createdAt: Date;
@@ -43,6 +44,11 @@ export const ActionRequestDefinition = {
     allowNull: false,
     field: "approved",
   },
+  information: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    field: "information"
+  },
   employeeId: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -73,6 +79,7 @@ export class ActionRequest
   public expirationDate: Date;
   public type: string;
   public approved: boolean;
+  public information: string;
   public employeeId: string;
   public managerId: string;
   public createdAt: Date;
