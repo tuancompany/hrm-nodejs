@@ -2,21 +2,21 @@ import moment from "moment";
 import { isEmpty } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
-// import { ManagerGateway } from "./manager.gateway";
-import { ACTION_REQUEST_TYPE, API_ERROR } from "./../../../../shared/constants";
+import { ManagerGateway } from "./manager.gateway";
+import { ACTION_REQUEST_TYPE, API_ERROR, SORT } from "./../../../../shared/constants";
 import { ActionRequestGateway } from "../action-request/action-request.gateway";
 import { IActionRequestResponse } from "./../../../../shared/interfaces/request-action.response";
 import { OvertimeGateway } from "./../overtime/overtime.gateway";
 import { DayoffGateway } from "./../dayoff/dayoff.gateway";
 
 export class ManagerService {
-  // private managerGateway: ManagerGateway;
+  private managerGateway: ManagerGateway;
   private actionRequestGateway: ActionRequestGateway;
   private overtimeGateway: OvertimeGateway;
   private dayoffGateway: DayoffGateway
 
   constructor() {
-    // this.managerGateway = new ManagerGateway();
+    this.managerGateway = new ManagerGateway();
     this.actionRequestGateway = new ActionRequestGateway();
     this.overtimeGateway = new OvertimeGateway();
     this.dayoffGateway = new DayoffGateway();
@@ -95,5 +95,43 @@ export class ManagerService {
       throw error;
     }
     // Check request action is exists
+  }
+
+  public async getManagers(
+    {
+      limit, 
+      order
+    }
+  ): Promise<any> {
+    try {
+      if (limit && parseInt(limit) < 0) {
+        throw API_ERROR.BAD_REQUEST("Query params limit must be >= 0");
+      }
+
+      if (order && ![SORT.ASC, SORT.DESC].includes(order.split(",")[1])) {
+        throw API_ERROR.BAD_REQUEST("Query params sort is not valid");
+      }
+
+      let options: {
+        limit?: number;
+        order?: string;
+      } = {};
+
+      if(limit) {
+        options.limit = limit;
+      }
+      if(order) {
+        options.order = order;
+      }
+
+      const managers = await this.managerGateway.getManagers(options);
+      return managers;
+
+    } catch (error: any) {
+      if (error.code === 500) {
+        throw API_ERROR.INTERNAL_SERVER(`Something went wrongs... : ${error}`);
+      }
+      throw error;
+    }
   }
 }

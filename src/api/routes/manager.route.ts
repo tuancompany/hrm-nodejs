@@ -34,6 +34,24 @@ export class ManagerRoute {
           }
         }
       );
+    this.router.route(
+      "/"
+    ).get(
+      this.authenticationMiddleware.authorize([
+        VALID_ACCESS_TYPES.GET_MANAGERS
+      ]),
+      async (req: Request, res: Response) => {
+        try {
+          const response = await this.managerController.getManagers(req);
+          res.json({
+            status: 200,
+            data: response
+          })
+        } catch (error) {
+          res.json({ error })
+        }
+      }
+    )
   }
 
   public routes(): IRouter {
