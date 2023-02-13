@@ -1,5 +1,5 @@
 import * as bodyParser from "body-parser";
-import express from "express";
+import express, { Request, Response } from "express";
 import * as http from "http";
 import * as dotenv from "dotenv";
 import cors from "cors";
@@ -39,6 +39,12 @@ export class Server {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(cors(options));
+
+    this.app.use(API_PREFIX.HEALTH_CHECK, (req: Request, res: Response, next) => {
+      res.json({
+        message: 'Server OK!'
+      })
+    })
 
     //***** */ Auth route: Auth route don't need to attach jwt token into its headers
     // ***** So that we put it above from authentication middleware

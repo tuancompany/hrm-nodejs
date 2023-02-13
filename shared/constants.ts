@@ -112,6 +112,7 @@ export const ALL_VALID_ACCESS_TYPES = [
 
 
 export const API_PREFIX = {
+  HEALTH_CHECK: "/health",
   ROOT_PREFIX: "/api",
   AUTH_PREFIX: "/auth",
   EMPLOYEE_PREFIX: "/employee",
