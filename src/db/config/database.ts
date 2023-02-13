@@ -14,4 +14,11 @@ module.exports = {
     host,
     dialect,
   },
+  production: {
+    username,
+    password,
+    database,
+    host,
+    dialect,
+  },
 };
