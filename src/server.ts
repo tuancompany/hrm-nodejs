@@ -12,6 +12,7 @@ import { ManagerRoute } from "./api/routes/manager.route";
 import { AuthenticationMiddleware } from "./api/middlewares/auth.middleware";
 import { Sequelize, sequelize } from "./db/";
 import { ALL_VALID_ACCESS_TYPES, API_PREFIX } from "./../shared/constants";
+import { WinstonLogger } from "../shared/helpers/utils/logger";
 
 dotenv.config();
 const allowedOrigins = ["http://localhost:3000"];
@@ -27,10 +28,13 @@ export class Server {
   private readonly managerRoute: ManagerRoute;
   private readonly authenticationMiddleware: AuthenticationMiddleware;
   private readonly sequelize: Sequelize;
+  private readonly logger: WinstonLogger;
+
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
     this.sequelize == sequelize;
+    this.logger = new WinstonLogger(process.env.NODE_ENV);
     this.employeeRoute = new EmployeeRoute();
     this.userRoute = new UserRoute();
     this.authRoute = new AuthRoute();
@@ -60,7 +64,7 @@ export class Server {
 
   public start(): http.Server {
     return this.app.listen(this.port, () => {
-      console.log(`Server is listening on port ${this.port}`);
+      this.logger.info(`Server is listening on port ${this.port}`);
     });
   }
 }

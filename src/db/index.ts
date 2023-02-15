@@ -46,10 +46,10 @@ import { ActionRequest, ActionRequestDefinition } from "./models/action-request.
 import { DayOff, DayOffDefinition } from "./models/dayoff.model";
 
 const env = process.env.NODE_ENV || "development";
-console.log('env', env);
-console.log('process.env', process.env);
+// console.log('env', env);
+// console.log('process.env', process.env);
 const config = require(__dirname + "/config/database")[env];
-console.log('config', config);
+// console.log('config', config);
 
 let sequelize: Sequelize;
 if (config.use_env_variable) {
