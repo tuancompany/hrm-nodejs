@@ -12,14 +12,22 @@ import {
   ACTION_REQUEST_TYPE,
   DAYOFF_TYPE,
 } from "./../../../../shared/constants";
+import { WinstonLogger } from "./../../../../shared/helpers/utils/logger";
+import { Utils, UtilsImpl } from "./../../../../shared/helpers/utils/common.utils";
 
 export class EmployeeController {
   private employeeService: EmployeeService;
+  private readonly logger: WinstonLogger;
+  private commonUtils: Utils;
+
   constructor() {
     this.employeeService = new EmployeeService();
+    this.logger = new WinstonLogger(process.env.NODE_ENV);
+    this.commonUtils = new UtilsImpl();
   }
 
   public async createEmployee(req: Request): Promise<CreateEmployeeResponse> {
+
     const schema = joi.object({
       name: joi.string().required().max(15).min(0),
       gender: joi.string().required().valid("Male", "Female"),
@@ -71,6 +79,7 @@ export class EmployeeController {
 
       // Check role permission of request here
       const response = await this.employeeService.createEmployee(requestBody);
+
       return response;
     } catch (error) {
       throw error;
@@ -80,12 +89,15 @@ export class EmployeeController {
   public async getEmployee(req: Request): Promise<GetEmployeeResponse[]> {
     try {
       const { limit, order, allowance, contract } = req.query;
+ 
       const response = await this.employeeService.getEmployee({
         limit,
         order,
         allowance,
         contract,
       });
+
+      this.logger.info(this.commonUtils.generateLog(req));
       return response;
     } catch (error) {
       throw error;
@@ -249,8 +261,11 @@ export class EmployeeController {
         data,
       });
 
+      this.logger.info(this.commonUtils.generateLog(req));
+
       return response;
     } catch (error) {
+      this.logger.error(this.commonUtils.generateLog(req), error);
       throw error;
     }
   }

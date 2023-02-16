@@ -157,6 +157,7 @@ export class EmployeeService {
         employee: input,
         contract: input.contract,
       });
+
       return response;
     } catch (error: any) {
       if (error.code === 500) {
