@@ -4,6 +4,7 @@ const host = process.env.NODE_ENV === "production" ? process.env.PGHOST : proces
 const username = process.env.NODE_ENV === "production" ? process.env.PGUSER : process.env.DB_USERAME;
 const password = process.env.NODE_ENV === "production" ? process.env.PGPASSWORD : process.env.DB_PASSWORD;
 const database = process.env.NODE_ENV === "production" ? process.env.PGDATABASE : process.env.DB_NAME;
+const port = process.env.NODE_ENV === "production" ? process.env.PGPORT : process.env.DB_PORT;
 const dialect = process.env.DB_DIALECT;
 
 module.exports = {
@@ -13,6 +14,7 @@ module.exports = {
     database,
     host,
     dialect,
+    port
   },
   production: {
     username,
@@ -20,5 +22,6 @@ module.exports = {
     database,
     host,
     dialect,
+    port
   },
 };
