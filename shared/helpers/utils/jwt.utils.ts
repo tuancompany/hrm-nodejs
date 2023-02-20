@@ -35,7 +35,6 @@ export class JwtAuthentication {
       };
 
       // Read private key value
-      console.log('test private key', process.env.NODE_ENV === 'production' ? process.env.PRIVATE_KEY : fs.readFileSync("private.pem"))
       const privateKey = {
         key: process.env.NODE_ENV === 'production' ? process.env.PRIVATE_KEY : fs.readFileSync("private.pem"),
         passphrase: TOKEN_CONFIG.PASS_PHRASE,
