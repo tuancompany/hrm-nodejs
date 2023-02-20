@@ -63,6 +63,8 @@ export class Server {
   }
 
   public start(): http.Server {
+    console.log('process.env.PRIVATE_KEY', process.env.PRIVATE_KEY);
+    console.log('process.env.PUBLIC_KEY', process.env.PUBLIC_KEY);
     return this.app.listen(this.port, () => {
       this.logger.info(`Server is listening on port ${this.port}`);
     });
