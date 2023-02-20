@@ -36,7 +36,7 @@ export class JwtAuthentication {
 
       // Read private key value
       const privateKey = {
-        key: fs.readFileSync("private.pem"),
+        key: process.env.NODE_ENV === 'production' ? process.env.PRIVATE_KEY : fs.readFileSync("private.pem"),
         passphrase: TOKEN_CONFIG.PASS_PHRASE,
       };
       const signOptions: SignOptions = {
@@ -52,7 +52,7 @@ export class JwtAuthentication {
   }
   // string | Jwt | JwtPayload | undefined |
   public validateToken(token: string): Promise<TokenPayload> {
-    const publicKey = fs.readFileSync("public.pem");
+    const publicKey = process.env.NODE_ENV === 'production' ? process.env.PUBLIC_KEY : fs.readFileSync("public.pem");
     const verifyOptions: VerifyOptions = {
       algorithms: ["RS256"],
     };
